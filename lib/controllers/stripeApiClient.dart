@@ -1,3 +1,4 @@
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -46,7 +47,8 @@ class StripePaymentHandle {
       Fluttertoast.showToast(msg: 'Payment succesfully completed');
     } on Exception catch (e) {
       if (e is StripeException) {
-        Fluttertoast.showToast(msg: 'Error: ${e.error.localizedMessage}');
+        Fluttertoast.showToast(
+            msg: 'Error: ${e.error.localizedMessage}');
       } else {
         Fluttertoast.showToast(msg: 'Unforeseen error: $e');
       }
@@ -66,7 +68,7 @@ class StripePaymentHandle {
       var response = await http.post(
         Uri.parse('https://api.stripe.com/v1/payment_intents'),
         headers: {
-          'Authorization': 'Bearer ',
+          'Authorization': 'Bearer sk_test_51M1mbVLz5pi4nHAq0YgVmxIEMGtUXQ7K21LpYhQCYpPv09bV40Q2phi0jkYyodreDYtNZIKDxMepbQQhu4u8sfw600v1s2Kbm5',
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: body,
