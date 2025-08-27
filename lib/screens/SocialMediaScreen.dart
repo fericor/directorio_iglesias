@@ -1,4 +1,4 @@
-import 'package:directorio_iglesias/controllers/AuthService.dart';
+import 'package:conexion_mas/controllers/AuthService.dart';
 import 'package:flutter/material.dart';
 
 class SocialMediaRegisterScreen extends StatelessWidget {

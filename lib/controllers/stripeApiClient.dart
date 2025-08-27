@@ -1,87 +1,86 @@
-
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
+import 'package:conexion_mas/utils/mainUtils.dart';
 
 class StripePaymentHandle {
   Map<String, dynamic>? paymentIntent;
 
-  Future<void> stripeMakePayment(String amount) async {
+  /// Inicia el flujo de pago y retorna true si fue exitoso
+  Future<bool> stripeMakePayment(String amount) async {
     try {
       paymentIntent = await createPaymentIntent(amount, 'EUR');
-      await Stripe.instance
-          .initPaymentSheet(
-              paymentSheetParameters: SetupPaymentSheetParameters(
-                  billingDetails: BillingDetails(
-                      name: 'YOUR NAME',
-                      email: 'YOUREMAIL@gmail.com',
-                      phone: 'YOUR NUMBER',
-                      address: Address(
-                          city: 'YOUR CITY',
-                          country: 'YOUR COUNTRY',
-                          line1: 'YOUR ADDRESS 1',
-                          line2: 'YOUR ADDRESS 2',
-                          postalCode: 'YOUR PINCODE',
-                          state: 'YOUR STATE')),
-                  paymentIntentClientSecret: paymentIntent![
-                      'client_secret'], //Gotten from payment intent
-                  style: ThemeMode.dark,
-                  merchantDisplayName: 'Ikay'))
-          .then((value) {});
 
-      //STEP 3: Display Payment sheet
-      displayPaymentSheet();
-    } catch (e) {
-      Fluttertoast.showToast(msg: e.toString());
-    }
-  }
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          billingDetails: BillingDetails(
+            name: 'Felix cortez',
+            email: 'fericor@gmail.com',
+            phone: '633535178',
+            address: Address(
+              city: 'Madrid',
+              country: 'España',
+              line1: 'Calle de Ejemplo 1',
+              line2: 'Apto. 2',
+              postalCode: '28001',
+              state: 'Madrid',
+            ),
+          ),
+          paymentIntentClientSecret: paymentIntent!['clientSecret'],
+          style: ThemeMode.dark,
+          merchantDisplayName: 'Conexion +',
+        ),
+      );
 
-  displayPaymentSheet() async {
-    try {
-      // 3. display the payment sheet.
+      // Mostrar la hoja de pago y esperar confirmación
       await Stripe.instance.presentPaymentSheet();
 
-      Fluttertoast.showToast(msg: 'Payment succesfully completed');
-    } on Exception catch (e) {
-      if (e is StripeException) {
-        Fluttertoast.showToast(
-            msg: 'Error: ${e.error.localizedMessage}');
-      } else {
-        Fluttertoast.showToast(msg: 'Unforeseen error: $e');
-      }
+      // ✅ Pago correcto
+      return true;
+    } catch (e) {
+      // ❌ Error en el pago
+      return false;
     }
   }
 
-  //create Payment
-  createPaymentIntent(String amount, String currency) async {
-    try {
-      //Request body
-      Map<String, dynamic> body = {
+  /// Crea el PaymentIntent en el servidor
+  Future<Map<String, dynamic>> createPaymentIntent(
+      String amount, String currency) async {
+    final response = await http.post(
+      Uri.parse('${MainUtils.urlHostApi}/createPaymentIntent'),
+      body: {
         'amount': calculateAmount(amount),
         'currency': currency,
-      };
+      },
+    );
+    return jsonDecode(response.body);
+  }
 
-      //Make post request to Stripe
-      var response = await http.post(
-        Uri.parse('https://api.stripe.com/v1/payment_intents'),
-        headers: {
-          'Authorization': 'Bearer sk_test_51M1mbVLz5pi4nHAq0YgVmxIEMGtUXQ7K21LpYhQCYpPv09bV40Q2phi0jkYyodreDYtNZIKDxMepbQQhu4u8sfw600v1s2Kbm5',
-          'Content-Type': 'application/x-www-form-urlencoded'
+  /// Registra la reserva en el backend
+  Future<bool> reservarProducto(String productoId, String usuarioId) async {
+    try {
+      final response = await http.post(
+        Uri.parse("${MainUtils.urlHostApi}/reservarProducto"),
+        body: {
+          "producto_id": productoId,
+          "usuario_id": usuarioId,
+          "monto": paymentIntent?['amount'] ?? "0",
         },
-        body: body,
       );
-      return json.decode(response.body);
-    } catch (err) {
-      throw Exception(err.toString());
+
+      if (response.statusCode == 200) {
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
     }
   }
 
-  //calculate Amount
-  calculateAmount(String amount) {
+  /// Convierte euros a céntimos
+  String calculateAmount(String amount) {
     final calculatedAmount = ((double.parse(amount)) * 100).toStringAsFixed(0);
-    return calculatedAmount.toString();
+    return calculatedAmount;
   }
 }

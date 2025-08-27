@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:directorio_iglesias/controllers/AuthService.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/validatorInputs.dart';
+import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/validatorInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -65,7 +65,7 @@ class _CambioContrasenaScreenState extends State<CambioContrasenaScreen> {
               passOld,
               passNew,
               localStorage.getItem('miToken').toString());
-          Map myMap = jsonDecode(iTems);
+          Map myMap = jsonDecode(iTems!);
 
           if (myMap["res"] == true) {
             Navigator.pop(context);

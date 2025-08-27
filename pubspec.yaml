@@ -1,5 +1,5 @@
-name: directorio_iglesias
-description: "A new Flutter project."
+name: conexion_mas
+description: "Evento y localizacion de iglesias."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -40,20 +40,22 @@ dependencies:
   intl: ^0.20.1
   cached_network_image: ^3.4.1
   http: ^1.2.2
-  geolocator: ^13.0.2
-  localstorage: ^5.0.0
+  geolocator: ^14.0.2
+  localstorage: ^6.0.0
   url_launcher: ^6.3.1
-  flutter_stripe: ^11.3.0
+  flutter_stripe: ^11.5.0
   fluttertoast: ^8.2.10
   input_quantity: ^2.5.1
-  firebase_auth: ^5.3.4
-  google_sign_in: ^6.2.2
+  firebase_auth: ^6.0.1
+  google_sign_in: ^7.1.1
   flutter_facebook_auth: ^7.1.1
-  firebase_core: ^3.9.0
+  firebase_core: ^4.0.0
   package_info_plus: ^8.1.2
   qr_flutter: ^4.1.0
   book_my_seat: ^1.0.1
   flutter_svg: ^1.1.6
+  firebase_messaging: ^16.0.0
+  flutter_local_notifications: ^19.4.1
 
 dev_dependencies:
   flutter_test:
@@ -64,7 +66,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

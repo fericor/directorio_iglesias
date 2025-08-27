@@ -1,6 +1,6 @@
 import 'package:book_my_seat/book_my_seat.dart';
-import 'package:directorio_iglesias/controllers/eventosApiClient.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
+import 'package:conexion_mas/controllers/eventosApiClient.dart';
+import 'package:conexion_mas/utils/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:localstorage/localstorage.dart';

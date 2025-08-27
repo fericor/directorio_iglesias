@@ -1,11 +1,30 @@
-import 'package:directorio_iglesias/models/iglesias.dart';
-import 'package:directorio_iglesias/utils/mainUtils.dart';
+import 'package:conexion_mas/models/iglesia.dart';
+import 'package:conexion_mas/models/iglesias.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class IglesiasApiClient {
   final String _baseUrl = MainUtils.urlHostApi;
   final http.Client _httpClient = http.Client();
+
+  Future<List<Iglesia>> obtenerIglesias() async {
+    try {
+      final response = await _httpClient.get(
+        Uri.parse('$_baseUrl/frcaListarIglesias'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = json.decode(response.body);
+        return data.map((json) => Iglesia.fromJson(json)).toList();
+      } else {
+        throw Exception('Error al cargar las iglesias: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error de conexión: $e');
+    }
+  }
 
   Future<List<Iglesias>> getIglesiasCerca(
       String latitud, longitud, distancia) async {

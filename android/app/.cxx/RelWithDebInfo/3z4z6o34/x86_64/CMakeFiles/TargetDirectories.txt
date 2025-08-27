@@ -1,2 +1,2 @@
-/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64/CMakeFiles/edit_cache.dir
-/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64/CMakeFiles/rebuild_cache.dir
+/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64/CMakeFiles/edit_cache.dir
+/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64/CMakeFiles/rebuild_cache.dir

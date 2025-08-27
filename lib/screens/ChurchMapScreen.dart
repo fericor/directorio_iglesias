@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:directorio_iglesias/controllers/iglesiasApiClient.dart';
-import 'package:directorio_iglesias/models/iglesias.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/mainUtils.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
+import 'package:conexion_mas/controllers/iglesiasApiClient.dart';
+import 'package:conexion_mas/models/iglesias.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
+import 'package:conexion_mas/utils/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
@@ -122,7 +122,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.grey[900],
+      backgroundColor: ColorsUtils.terceroColor,
       builder: (context) => DraggableScrollableSheet(
         expand: false,
         builder: (context, scrollController) => SingleChildScrollView(
@@ -144,7 +144,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                             image: imageProvider,
                             fit: BoxFit.cover,
                             colorFilter: ColorFilter.mode(
-                                Colors.white, BlendMode.colorBurn)),
+                                ColorsUtils.blancoColor, BlendMode.colorBurn)),
                       ),
                     ),
                     placeholder: (context, url) =>
@@ -171,7 +171,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(
@@ -182,7 +182,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                             children: [
                               Icon(
                                 Icons.account_circle,
-                                color: Colors.white,
+                                color: ColorsUtils.blancoColor,
                                 size: 30,
                               ),
                               SizedBox(height: 4),
@@ -191,7 +191,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: ColorsUtils.blancoColor),
                               ),
                             ],
                           ),
@@ -211,7 +211,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(
@@ -222,7 +222,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                             children: [
                               Icon(
                                 Icons.call,
-                                color: Colors.white,
+                                color: ColorsUtils.blancoColor,
                                 size: 30,
                               ),
                               SizedBox(height: 4),
@@ -231,7 +231,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: ColorsUtils.blancoColor),
                               ),
                             ],
                           ),
@@ -251,7 +251,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: Colors.orange,
+                          color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Padding(
@@ -260,10 +260,14 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.navigation,
-                                color: Colors.white,
-                                size: 30,
+                              Transform.rotate(
+                                angle:
+                                    90 * 3.1416 / 180, // de grados a radianes
+                                child: Icon(
+                                  Icons.navigation,
+                                  color: ColorsUtils.blancoColor,
+                                  size: 30,
+                                ),
                               ),
                               SizedBox(height: 4),
                               Text(
@@ -271,7 +275,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                 style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white),
+                                    color: ColorsUtils.blancoColor),
                               ),
                             ],
                           ),
@@ -286,12 +290,13 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                      color: ColorsUtils.blancoColor),
                 ),
                 SizedBox(height: 0),
                 Text(
                   church.direccion!,
-                  style: TextStyle(fontSize: 16, color: Colors.grey[500]),
+                  style:
+                      TextStyle(fontSize: 16, color: ColorsUtils.terceroColor),
                 ),
                 SizedBox(
                   height: 16,
@@ -302,7 +307,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                 ),
                 Text(
                   church.descripcion!,
-                  style: TextStyle(fontSize: 16, color: Colors.white70),
+                  style:
+                      TextStyle(fontSize: 16, color: ColorsUtils.blancoColor),
                 ),
                 SizedBox(
                   height: 20,
@@ -479,7 +485,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                       // urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       urlTemplate:
                           'https://api.mapbox.com/styles/v1/fericor/cm5aqsckv00li01sa3ubd38gn/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZmVyaWNvciIsImEiOiJja3J3ZHpzNnQwZm54Mm5xamo0OHN6bDBhIn0.2EtgIWzOEgy6AKorHcL44w',
-                      userAgentPackageName: 'com.fericor.eventos',
+                      userAgentPackageName: 'com.fericor.conexionmas',
                       // Plenty of other options available!
                     ),
                     CircleLayer(
@@ -489,8 +495,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                           radius: currentRadius,
                           useRadiusInMeter: true,
                           borderStrokeWidth: 2,
-                          borderColor: Colors.orangeAccent,
-                          color: Colors.orangeAccent.withOpacity(0.3),
+                          borderColor: ColorsUtils.principalColor,
+                          color: ColorsUtils.principalColor.withOpacity(0.3),
                         )
                       ],
                     ),
@@ -504,7 +510,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                     LatLng(church.latitud!, church.longitud!),
                                 child: Icon(
                                   Icons.my_location,
-                                  color: Colors.deepOrangeAccent,
+                                  color: ColorsUtils.principalColor,
                                   size: 40,
                                 ),
                               )
@@ -517,14 +523,14 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                   onTap: () => _showChurchDetails(church),
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[850],
+                                      color: ColorsUtils.terceroColor,
                                       borderRadius: BorderRadius.circular(5),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
                                           Icons.location_on,
-                                          color: Colors.orange,
+                                          color: ColorsUtils.principalColor,
                                           size: 16,
                                         ),
                                         Expanded(
@@ -535,17 +541,13 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                               fontSize: 11,
                                               overflow: TextOverflow.ellipsis,
                                               fontWeight: FontWeight.bold,
-                                              color: Colors.white,
+                                              color: ColorsUtils.blancoColor,
                                             ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ), /*Icon(
-                                    Icons.location_on,
-                                    color: Colors.orange,
-                                    size: 40,
-                                  ),*/
+                                  ),
                                 ),
                               );
                       }).toList(),
@@ -589,7 +591,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                               width: 250,
                                               height: 150,
                                               decoration: BoxDecoration(
-                                                color: Colors.grey[850],
+                                                color: ColorsUtils.terceroColor,
                                                 borderRadius:
                                                     BorderRadius.circular(12),
                                               ),
@@ -617,12 +619,11 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                                                     imageProvider,
                                                                 fit: BoxFit
                                                                     .cover,
-                                                                colorFilter:
-                                                                    ColorFilter.mode(
-                                                                        Colors
-                                                                            .white,
-                                                                        BlendMode
-                                                                            .colorBurn)),
+                                                                colorFilter: ColorFilter.mode(
+                                                                    ColorsUtils
+                                                                        .blancoColor,
+                                                                    BlendMode
+                                                                        .colorBurn)),
                                                           ),
                                                         ),
                                                         placeholder: (context,
@@ -658,8 +659,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
-                                                              color:
-                                                                  Colors.white),
+                                                              color: ColorsUtils
+                                                                  .blancoColor),
                                                         ),
                                                         SizedBox(height: 2),
                                                         Text(
@@ -667,8 +668,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                                           maxLines: 1,
                                                           style: TextStyle(
                                                             fontSize: 12,
-                                                            color: Colors
-                                                                .grey[500],
+                                                            color: ColorsUtils
+                                                                .blancoColor,
                                                           ),
                                                         ),
                                                       ],
@@ -682,14 +683,22 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                         Positioned(
                                           top: 0.0,
                                           right: 0.0,
-                                          child: IconButton(
-                                            onPressed: () {
-                                              _showChurchDetails(church);
-                                            },
-                                            icon: Icon(
-                                              Icons.info_rounded,
-                                              color: Colors.white,
-                                              size: 30,
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: ColorsUtils.principalColor
+                                                  .withOpacity(0.8),
+                                              borderRadius:
+                                                  BorderRadius.circular(30),
+                                            ),
+                                            child: IconButton(
+                                              onPressed: () {
+                                                _showChurchDetails(church);
+                                              },
+                                              icon: Icon(
+                                                Icons.info_rounded,
+                                                color: ColorsUtils.blancoColor,
+                                                size: 30,
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -716,7 +725,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
       padding: EdgeInsets.all(0),
       icon: Icon(
         Icons.settings,
-        color: ColorsUtils.segundoColor,
+        color: ColorsUtils.blancoColor,
         size: 30,
       ),
       itemBuilder: (context) => [

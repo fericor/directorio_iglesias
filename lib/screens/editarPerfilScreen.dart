@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:directorio_iglesias/controllers/AuthService.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/validatorInputs.dart';
+import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/validatorInputs.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -36,7 +36,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
     var iTems = await AuthService().infoUser(
         localStorage.getItem('miIdUser').toString(),
         localStorage.getItem('miToken').toString());
-    Map myMap = jsonDecode(iTems);
+    Map myMap = jsonDecode(iTems!);
 
     _nombreController.text = myMap['nombre'];
     _apellidosController.text = myMap['apellidos'];
@@ -64,7 +64,7 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
             telefono,
             email,
             localStorage.getItem('miToken').toString());
-        Map myMap = jsonDecode(iTems);
+        Map myMap = jsonDecode(iTems!);
 
         if (myMap["res"] == true) {
           Navigator.pop(context);

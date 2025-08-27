@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "237529763884",
-    "project_id": "ipueeventos",
-    "storage_bucket": "ipueeventos.firebasestorage.app"
+    "project_number": "1031926756701",
+    "project_id": "conexionmas-72878",
+    "storage_bucket": "conexionmas-72878.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:237529763884:android:75c222b74d5f10ecaf4189",
+        "mobilesdk_app_id": "1:1031926756701:android:c66db53084ee66f5d224b4",
         "android_client_info": {
-          "package_name": "com.fericor.eventos"
+          "package_name": "com.fericor.conexionmas"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCWKtNeppRfiXGc7sr_Id31yZ1PhrEgOwo"
+          "current_key": "AIzaSyAl9fpK5axoCkDmn8HPJhbxueYsFKxodHs"
         }
       ],
       "services": {

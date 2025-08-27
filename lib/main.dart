@@ -1,17 +1,16 @@
-import 'package:directorio_iglesias/screens/SplashScreen.dart';
+import 'package:conexion_mas/controllers/notifications_service.dart';
+import 'package:conexion_mas/screens/SplashScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 
 Future<void> main() async {
   Stripe.publishableKey =
-      "pk_test_51M1mbVLz5pi4nHAq8FwHX7s7EGQx7EjpQ5RkSHOmw4nncusTL125M2py3ix3vuWUzSZ1s342rP78jBM4DZlaS59M00c0yHCDOe";
-  // Configuración para pantalla completa
-  // WidgetsFlutterBinding.ensureInitialized();
-  // SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+      "pk_live_51RyDhkBoePltu1kjNepmIIjTBlM3P9itXT0dOZHDvh8vWNFzLBvHHdCLRZ3liWpMyhfUyZp2go3nCaEMbpG50EIE008X7o4nLr";
 
-  /*await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );*/
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await setupPushNotifications();
   runApp(ChurchDirectoryApp());
 }
 
@@ -22,10 +21,10 @@ class ChurchDirectoryApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Agenda Iglesia',
+      title: 'Conexión +',
       theme: ThemeData(
-          fontFamily: 'Josefin',
-          primarySwatch: Colors.orange,
+          fontFamily: 'Roboto',
+          primarySwatch: Colors.deepPurple,
           brightness: Brightness.dark),
       home: SplashScreen(),
     );

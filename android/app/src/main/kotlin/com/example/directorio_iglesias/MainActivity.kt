@@ -1,4 +1,4 @@
-package com.fericor.eventos
+package com.fericor.conexionmas
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity

@@ -1,6 +1,6 @@
 {
-    "name": "directorio_iglesias",
-    "short_name": "directorio_iglesias",
+    "name": "conexion_mas",
+    "short_name": "conexion_mas",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import 'package:directorio_iglesias/controllers/notificacionesApiClient.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
-import 'package:directorio_iglesias/models/notificaciones.dart';
+import 'package:conexion_mas/controllers/notificacionesApiClient.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/models/notificaciones.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -42,29 +42,45 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorsUtils.fondoColor,
       body: Stack(
         children: [
           Positioned(
-            top: 0,
-            bottom: 0,
-            left: 120,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xfff6f8fe),
-              ),
+            top: 60,
+            left: 15,
+            right: 15,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: Container(
+                    decoration: BoxDecoration(
+                      color: ColorsUtils.principalColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
           ),
           Positioned(
-            top: Platform.isAndroid ? 30 : 60,
+            top: 130,
             left: 20,
             right: 20,
             child: frcaWidget.frca_texto_header(
                 "Notificaciones", popupMenuIglesias()),
           ),
           Positioned(
-            top: Platform.isAndroid ? 80 : 110,
+            top: 180,
             left: 20,
             right: 20,
             bottom: 0,
@@ -112,7 +128,7 @@ class _NotificacionesScreenState extends State<NotificacionesScreen> {
                                       padding: const EdgeInsets.all(8.0),
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: ColorsUtils.blancoColor,
                                           borderRadius:
                                               BorderRadius.circular(8.0),
                                         ),

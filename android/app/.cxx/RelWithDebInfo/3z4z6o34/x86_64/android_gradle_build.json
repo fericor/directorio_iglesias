@@ -6,14 +6,14 @@
     [
       "/Users/felixcortezarevalo/Library/Android/sdk/cmake/3.22.1/bin/ninja",
       "-C",
-      "/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64",
+      "/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
     "/Users/felixcortezarevalo/Library/Android/sdk/cmake/3.22.1/bin/ninja",
     "-C",
-    "/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64",
+    "/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/android/app/.cxx/RelWithDebInfo/3z4z6o34/x86_64",
     "{LIST_OF_TARGETS_TO_BUILD}"
   ],
   "libraries": {},

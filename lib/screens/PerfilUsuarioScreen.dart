@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:directorio_iglesias/controllers/AuthService.dart';
-import 'package:directorio_iglesias/pages/main.page.dart';
-import 'package:directorio_iglesias/screens/cambioPassScreen.dart';
-import 'package:directorio_iglesias/screens/editarPerfilScreen.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/mainUtils.dart';
+import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/pages/main.page.dart';
+import 'package:conexion_mas/screens/NotificacionesScreen.dart';
+import 'package:conexion_mas/screens/cambioPassScreen.dart';
+import 'package:conexion_mas/screens/editarPerfilScreen.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
+import 'package:conexion_mas/widgets/butonDeleteAcount.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -32,6 +34,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
   String idUser = "0";
   String nombre = "";
   String email = "";
+  String apiToken = localStorage.getItem('miToken').toString() ?? '0';
 
   @override
   void initState() {
@@ -54,7 +57,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
     var iTems = await AuthService().infoUser(
         localStorage.getItem('miIdUser').toString(),
         localStorage.getItem('miToken').toString());
-    Map myMap = jsonDecode(iTems);
+    Map myMap = jsonDecode(iTems!);
 
     setState(() {
       nombre = "${myMap['nombre']} ${myMap['apellidos']}";
@@ -72,20 +75,9 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorsUtils.fondoColor,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: 120,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xfff6f8fe),
-              ),
-            ),
-          ),
           Positioned(
             top: Platform.isAndroid ? 30 : 60,
             left: 20,
@@ -100,7 +92,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                       children: [
                         CircleAvatar(
                           radius: 60,
-                          backgroundColor: Colors.white,
+                          backgroundColor: ColorsUtils.blancoColor,
                           backgroundImage: NetworkImage(
                             "${MainUtils.urlHostAssets}/images/users/user_$idUser.png",
                           ),
@@ -110,7 +102,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                           nombre,
                           style: TextStyle(
                             fontSize: 22,
-                            color: Colors.black,
+                            color: ColorsUtils.blancoColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -142,11 +134,13 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                   },
                 ),
                 buildOption(
-                  icon: Icons.meeting_room,
-                  title: 'Llamadas',
+                  icon: Icons.notifications,
+                  title: 'Mis notificaciones',
                   onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Editar Perfil seleccionado')),
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const NotificacionesScreen()),
                     );
                   },
                 ),
@@ -175,6 +169,11 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                       SnackBar(content: Text('Configuración seleccionada')),
                     );
                   },
+                ),
+                DeleteAccountButton(
+                  userId: idUser, // el ID del usuario logueado
+                  apiUrl:
+                      "${MainUtils.urlHostApi}/usuarios/$idUser?api_token=$apiToken", // endpoint DELETE
                 ),
                 SizedBox(
                   height: 60.0,
@@ -209,7 +208,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                   "Version",
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.black,
+                    color: ColorsUtils.blancoColor,
                     fontFamily: "Roboto",
                   ),
                 ),
@@ -218,7 +217,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                   _packageInfo.version,
                   style: TextStyle(
                     fontSize: 14,
-                    color: Colors.black,
+                    color: ColorsUtils.principalColor,
                     fontWeight: FontWeight.bold,
                     fontFamily: "Roboto",
                   ),
@@ -243,7 +242,8 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
           title,
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
         ),
-        trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+        trailing: Icon(Icons.arrow_forward_ios,
+            size: 16, color: ColorsUtils.blancoColor),
         onTap: onTap,
       ),
     );
@@ -258,7 +258,9 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
       title: Text(
         title,
         style: TextStyle(
-            color: Colors.black, fontSize: 18, fontWeight: FontWeight.w500),
+            color: ColorsUtils.principalColor,
+            fontSize: 18,
+            fontWeight: FontWeight.w500),
       ),
       // trailing: Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: onTap,

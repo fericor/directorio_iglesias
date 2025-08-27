@@ -9,10 +9,10 @@
 -DCMAKE_ANDROID_NDK=/Users/felixcortezarevalo/Library/Android/sdk/ndk/26.3.11579264
 -DCMAKE_TOOLCHAIN_FILE=/Users/felixcortezarevalo/Library/Android/sdk/ndk/26.3.11579264/build/cmake/android.toolchain.cmake
 -DCMAKE_MAKE_PROGRAM=/Users/felixcortezarevalo/Library/Android/sdk/cmake/3.22.1/bin/ninja
--DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/build/app/intermediates/cxx/RelWithDebInfo/3z4z6o34/obj/armeabi-v7a
--DCMAKE_RUNTIME_OUTPUT_DIRECTORY=/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/build/app/intermediates/cxx/RelWithDebInfo/3z4z6o34/obj/armeabi-v7a
+-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/build/app/intermediates/cxx/RelWithDebInfo/3z4z6o34/obj/armeabi-v7a
+-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/build/app/intermediates/cxx/RelWithDebInfo/3z4z6o34/obj/armeabi-v7a
 -DCMAKE_BUILD_TYPE=RelWithDebInfo
--B/Users/felixcortezarevalo/Development/Apps/fericor/directorio_iglesias/android/app/.cxx/RelWithDebInfo/3z4z6o34/armeabi-v7a
+-B/Users/felixcortezarevalo/Development/Apps/fericor/conexion_mas/android/app/.cxx/RelWithDebInfo/3z4z6o34/armeabi-v7a
 -GNinja
 -Wno-dev
 --no-warn-unused-cli

@@ -24,10 +24,7 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for android - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return android;
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
@@ -53,11 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCATcDXIn5hLMLu3686gOAmuDKt4PcwXYA',
-    appId: '1:237529763884:ios:7b82bb47e7b28fe3af4189',
-    messagingSenderId: '237529763884',
-    projectId: 'ipueeventos',
-    storageBucket: 'ipueeventos.firebasestorage.app',
-    iosBundleId: 'com.fericor.eventos',
+    apiKey: 'AIzaSyDMD-hfdgGDqRxWqeyLiYkwNNayzigoLLA',
+    appId: '1:1031926756701:ios:dfd750901c28c85bd224b4',
+    messagingSenderId: '1031926756701',
+    projectId: 'conexionmas-72878',
+    storageBucket: 'conexionmas-72878.firebasestorage.app',
+    iosBundleId: 'com.fericor.conexionmas',
   );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyAl9fpK5axoCkDmn8HPJhbxueYsFKxodHs',
+    appId: '1:1031926756701:android:c66db53084ee66f5d224b4',
+    messagingSenderId: '1031926756701',
+    projectId: 'conexionmas-72878',
+    storageBucket: 'conexionmas-72878.firebasestorage.app',
+  );
+
 }

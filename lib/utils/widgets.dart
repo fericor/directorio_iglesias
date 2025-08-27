@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/mainUtils.dart';
+import 'package:conexion_mas/models/categorias.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
 
@@ -14,7 +15,7 @@ class frcaWidget {
           Container(
             width: 50,
             height: 5,
-            decoration: BoxDecoration(color: Colors.white),
+            decoration: BoxDecoration(color: ColorsUtils.blancoColor),
           ),
           SizedBox(
             width: 5.0,
@@ -22,7 +23,7 @@ class frcaWidget {
           Container(
             width: 10,
             height: 5,
-            decoration: BoxDecoration(color: Colors.white),
+            decoration: BoxDecoration(color: ColorsUtils.blancoColor),
           ),
           SizedBox(
             width: 5.0,
@@ -30,7 +31,7 @@ class frcaWidget {
           Container(
             width: 5,
             height: 5,
-            decoration: BoxDecoration(color: Colors.white),
+            decoration: BoxDecoration(color: ColorsUtils.blancoColor),
           ),
         ],
       ),
@@ -53,7 +54,7 @@ class frcaWidget {
               Navigator.pop(context);
             },
             icon: Icon(Icons.arrow_back),
-            color: Colors.white,
+            color: ColorsUtils.blancoColor,
           ),
         ),
         Container(
@@ -68,7 +69,7 @@ class frcaWidget {
               fns();
             },
             icon: Icon(Icons.favorite_border),
-            color: Colors.white,
+            color: ColorsUtils.blancoColor,
           ),
         ),
       ],
@@ -82,7 +83,7 @@ class frcaWidget {
       ),
       child: Center(
         child: CircularProgressIndicator(
-          color: Colors.white,
+          color: ColorsUtils.blancoColor,
         ),
       ),
     );
@@ -97,7 +98,7 @@ class frcaWidget {
           width: 70.0,
           height: 70.0,
           decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent,
+            color: ColorsUtils.principalColor,
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Padding(
@@ -107,7 +108,7 @@ class frcaWidget {
                 Text(
                   "Días",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 12.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
@@ -116,7 +117,7 @@ class frcaWidget {
                 Text(
                   dias,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -133,7 +134,7 @@ class frcaWidget {
           width: 70.0,
           height: 70.0,
           decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent,
+            color: ColorsUtils.principalColor,
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Padding(
@@ -143,7 +144,7 @@ class frcaWidget {
                 Text(
                   "Horas",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 12.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
@@ -152,7 +153,7 @@ class frcaWidget {
                 Text(
                   horas,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -169,7 +170,7 @@ class frcaWidget {
           width: 70.0,
           height: 70.0,
           decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent,
+            color: ColorsUtils.principalColor,
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Padding(
@@ -179,7 +180,7 @@ class frcaWidget {
                 Text(
                   "Minutos",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 12.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
@@ -188,7 +189,7 @@ class frcaWidget {
                 Text(
                   minutos,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -205,7 +206,7 @@ class frcaWidget {
           width: 70.0,
           height: 70.0,
           decoration: BoxDecoration(
-            color: Colors.deepOrangeAccent,
+            color: ColorsUtils.principalColor,
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Padding(
@@ -215,7 +216,7 @@ class frcaWidget {
                 Text(
                   "Segundos",
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 12.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
@@ -224,7 +225,7 @@ class frcaWidget {
                 Text(
                   segundos,
                   style: TextStyle(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 30.0,
                     fontWeight: FontWeight.bold,
                   ),
@@ -243,7 +244,7 @@ class frcaWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: ColorsUtils.blancoColor,
             borderRadius: BorderRadius.circular(5),
           ),
           child: Padding(
@@ -257,7 +258,7 @@ class frcaWidget {
                   width: 30,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: ColorsUtils.negroColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
@@ -268,7 +269,7 @@ class frcaWidget {
                   width: 20,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: Colors.black,
+                    color: ColorsUtils.negroColor,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 )
@@ -289,7 +290,7 @@ class frcaWidget {
             ),
             border: Border.all(
               width: 5,
-              color: Colors.white,
+              color: ColorsUtils.blancoColor,
             ),
           ),
         ),
@@ -303,19 +304,24 @@ class frcaWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: ColorsUtils.segundoColor,
         borderRadius: BorderRadius.circular(60),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
-            spreadRadius: 0.5,
-            blurRadius: 0.5,
+            color: ColorsUtils.negroColor.withOpacity(0.7),
+            spreadRadius: 0.7,
+            blurRadius: 0.7,
             offset: Offset(0, 1),
           ),
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 1, bottom: 1, left: 10, right: 0),
+        padding: const EdgeInsets.only(
+          top: 0,
+          bottom: 0,
+          left: 25,
+          right: 0,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -326,15 +332,23 @@ class frcaWidget {
                 onChanged: (value) {
                   textBusca = value;
                 },
-                style: TextStyle(color: Colors.black),
+                style: TextStyle(
+                  color: ColorsUtils.blancoColor,
+                  fontSize: 14.0,
+                ),
                 decoration: InputDecoration(
-                  contentPadding: EdgeInsets.all(5.0),
+                  contentPadding: EdgeInsets.symmetric(
+                      horizontal: 0, vertical: 0), // Reduce el padding
+                  border: OutlineInputBorder(),
+                  fillColor: ColorsUtils.terceroColor,
                   hintText: texto,
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(width: 0, color: Colors.white),
+                    borderSide:
+                        BorderSide(width: 0, color: ColorsUtils.segundoColor),
                   ),
                   focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 0, color: Colors.white),
+                    borderSide:
+                        BorderSide(width: 0, color: ColorsUtils.segundoColor),
                   ),
                 ),
               ),
@@ -371,7 +385,7 @@ class frcaWidget {
         borderRadius: BorderRadius.circular(60),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.2),
+            color: ColorsUtils.terceroColor.withOpacity(0.2),
             spreadRadius: 0.5,
             blurRadius: 0.5,
             offset: Offset(0, 1),
@@ -387,7 +401,8 @@ class frcaWidget {
             IconButton(
               icon: Icon(
                 Icons.home,
-                color: num == 0 ? Colors.white : Colors.black38,
+                color:
+                    num == 0 ? ColorsUtils.blancoColor : ColorsUtils.negroColor,
                 size: 30,
               ),
               onPressed: () {
@@ -397,7 +412,8 @@ class frcaWidget {
             IconButton(
               icon: Icon(
                 Icons.church,
-                color: num == 1 ? Colors.white : Colors.black38,
+                color:
+                    num == 1 ? ColorsUtils.blancoColor : ColorsUtils.negroColor,
                 size: 30,
               ),
               onPressed: () {
@@ -406,8 +422,9 @@ class frcaWidget {
             ),
             IconButton(
               icon: Icon(
-                Icons.notifications,
-                color: num == 2 ? Colors.white : Colors.black38,
+                Icons.calendar_view_day,
+                color:
+                    num == 2 ? ColorsUtils.blancoColor : ColorsUtils.negroColor,
                 size: 30,
               ),
               onPressed: () {
@@ -446,7 +463,9 @@ class frcaWidget {
                 : IconButton(
                     icon: Icon(
                       Icons.person,
-                      color: num == 3 ? Colors.white : Colors.black38,
+                      color: num == 3
+                          ? ColorsUtils.blancoColor
+                          : ColorsUtils.negroColor,
                       size: 30,
                     ),
                     onPressed: () {
@@ -494,7 +513,7 @@ class frcaWidget {
               fnsPosition();
             },
             icon: Icon(Icons.my_location_outlined),
-            color: Colors.white,
+            color: ColorsUtils.blancoColor,
           ),
         ),
         SizedBox(
@@ -517,7 +536,7 @@ class frcaWidget {
             icon: Icon(
               Icons.add,
             ),
-            color: Colors.white,
+            color: ColorsUtils.blancoColor,
           ),
         ),
         SizedBox(
@@ -540,14 +559,14 @@ class frcaWidget {
             icon: Icon(
               Icons.remove,
             ),
-            color: Colors.white,
+            color: ColorsUtils.blancoColor,
           ),
         ),
       ],
     );
   }
 
-  static frca_categori_list(Function fns, int num) {
+  static frca_categori_listOld(Function fns, int num) {
     return SizedBox(
       height: 40.0,
       child: ListView(
@@ -563,7 +582,7 @@ class frcaWidget {
                 Text(
                   "Todo",
                   style: TextStyle(
-                    color: Colors.black,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 16,
                     fontWeight: num == 0 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -608,7 +627,7 @@ class frcaWidget {
                 Text(
                   "Región 1",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 16,
                     fontWeight: num == 1 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -653,7 +672,7 @@ class frcaWidget {
                 Text(
                   "Región 2",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 16,
                     fontWeight: num == 2 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -698,7 +717,7 @@ class frcaWidget {
                 Text(
                   "Región 3",
                   style: TextStyle(
-                    color: Colors.black54,
+                    color: ColorsUtils.blancoColor,
                     fontSize: 16,
                     fontWeight: num == 3 ? FontWeight.bold : FontWeight.normal,
                   ),
@@ -735,6 +754,90 @@ class frcaWidget {
     );
   }
 
+  static Widget frca_categori_list(
+      Function(int) fns, int selectedIndex, List<Categorias> categorias) {
+    return SizedBox(
+      height: 40.0,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: [
+          // Widget para "Todos" (opcional)
+          _buildCategoriaItem(
+            fns: fns,
+            id: 0,
+            nombre: "Todo",
+            selectedIndex: selectedIndex,
+          ),
+          SizedBox(width: 20),
+
+          // Lista dinámica de categorías
+          ...categorias.map((categoria) {
+            return Row(
+              children: [
+                _buildCategoriaItem(
+                  fns: fns,
+                  id: categoria.id ?? 0,
+                  nombre: categoria.titulo ?? '',
+                  selectedIndex: selectedIndex,
+                ),
+                SizedBox(width: 20),
+              ],
+            );
+          }).toList(),
+        ],
+      ),
+    );
+  }
+
+  // Método auxiliar para construir cada ítem de categoría
+  static Widget _buildCategoriaItem({
+    required Function(int) fns,
+    required int id,
+    required String nombre,
+    required int selectedIndex,
+  }) {
+    return GestureDetector(
+      onTap: () => fns(id),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            nombre,
+            style: TextStyle(
+              color: ColorsUtils.blancoColor,
+              fontSize: 14,
+              fontWeight:
+                  selectedIndex == id ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+          if (selectedIndex == id)
+            Row(
+              children: [
+                Container(
+                  width: 10,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: ColorsUtils.principalColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                SizedBox(width: 2),
+                Container(
+                  width: 30,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: ColorsUtils.principalColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ],
+            )
+        ],
+      ),
+    );
+  }
+
   static frca_texto_header(String texto, Widget widgets) {
     return Row(
       children: [
@@ -747,12 +850,15 @@ class frcaWidget {
                 Text(
                   texto,
                   style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
+                    color: ColorsUtils.blancoColor,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
+            ),
+            SizedBox(
+              height: 2,
             ),
             Row(
               children: [
@@ -798,7 +904,7 @@ class frcaWidget {
           SizedBox(height: 8),
           Text(
             "No hay datos para mostrar",
-            style: TextStyle(color: Colors.black54, fontSize: 14),
+            style: TextStyle(color: ColorsUtils.negroColor, fontSize: 14),
           ),
         ],
       ),
@@ -811,14 +917,14 @@ class frcaWidget {
         padding: const EdgeInsets.all(8.0),
         child: Text(
           mensaje,
-          style: TextStyle(color: Colors.black54, fontSize: 20),
+          style: TextStyle(color: ColorsUtils.blancoColor, fontSize: 14),
         ),
       ),
     );
   }
 
   static frca_number_evento(String titulo, descripcion, precio, restante,
-      context, Function fns1, int index) {
+      context, Function fns1, int id, int index) {
     String precioTxt = precio == "0" ? "GRATIS" : "$precio €";
     return Padding(
       padding: const EdgeInsets.only(left: 20.0, right: 20.0, bottom: 5.0),
@@ -881,7 +987,7 @@ class frcaWidget {
                     precioTxt,
                     style: TextStyle(
                         fontSize: 20,
-                        color: Colors.black,
+                        color: ColorsUtils.negroColor,
                         fontWeight: FontWeight.bold,
                         fontFamily: "Roboto"),
                   )
@@ -899,7 +1005,8 @@ class frcaWidget {
                     qtyFormProps: QtyFormProps(
                       style: TextStyle(
                           fontSize: 22, // Cambia el tamaño del texto
-                          color: Colors.black, // Cambia el color del texto
+                          color: ColorsUtils
+                              .negroColor, // Cambia el color del texto
                           fontWeight: FontWeight.bold,
                           fontFamily: "Roboto"),
                     ),
@@ -929,7 +1036,7 @@ class frcaWidget {
                           ),
                         )),
                     onQtyChanged: (val) {
-                      fns1(val, index);
+                      fns1(val, id, index);
                     },
                   ),
                   SizedBox(

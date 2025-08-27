@@ -2,12 +2,17 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:directorio_iglesias/controllers/AuthService.dart';
-import 'package:directorio_iglesias/controllers/eventosApiClient.dart';
-import 'package:directorio_iglesias/models/eventosItems.dart';
-import 'package:directorio_iglesias/pages/main.page.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
-import 'package:directorio_iglesias/widgets/detalleEvento.dart';
+import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/controllers/eventosApiClient.dart';
+import 'package:conexion_mas/controllers/notifications_service.dart';
+import 'package:conexion_mas/controllers/reservasApiClient.dart';
+import 'package:conexion_mas/models/eventosItems.dart';
+import 'package:conexion_mas/pages/main.page.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
+import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/widgets/detalleEvento.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localstorage/localstorage.dart';
@@ -30,13 +35,47 @@ class _SplashScreenState extends State<SplashScreen> {
   String minutosTxt = "0";
   String segundosTxt = "0";
 
+  String? _token;
+
   @override
   void initState() {
     super.initState();
 
+    _getToken();
+
     isLogin();
+    _initializeNotifications();
     _determinePosition();
     listarEventoPortada();
+  }
+
+  void _initializeNotifications() {
+    // Configurar el contexto después de que el widget esté construido
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      NotificationService.setContext(context);
+    });
+
+    // Inicializar notificaciones
+    setupPushNotifications();
+  }
+
+  Future<void> _getToken() async {
+    await initLocalStorage();
+
+    String? token = await FirebaseMessaging.instance.getToken();
+    setState(() {
+      _token = token;
+    });
+    localStorage.setItem('miTokenNotificaciones', _token!);
+  }
+
+  Future<void> updateTokenNotificaciones(
+      String idUser, String idDevice, String token) async {
+    await AuthService().updateTokenNotification(
+      idUser,
+      token,
+      idDevice,
+    );
   }
 
   Future<void> isLogin() async {
@@ -48,18 +87,40 @@ class _SplashScreenState extends State<SplashScreen> {
         final password = localStorage.getItem('miPass')!.toString();
 
         var iTems = await AuthService().login(email, password);
-        Map myMap = jsonDecode(iTems);
+        Map myMap = jsonDecode(iTems!);
 
-        localStorage.setItem('miToken', myMap['token'].toString());
-        localStorage.setItem('miIdUser', myMap['idUser'].toString());
-        localStorage.setItem('miEmail', myMap['email'].toString());
+        if (myMap['res']) {
+          print(1);
+          localStorage.setItem('miToken', myMap['token'].toString());
+          localStorage.setItem('miIdUser', myMap['idUser'].toString());
+          localStorage.setItem('miEmail', myMap['email'].toString());
+          localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
 
-        localStorage.setItem('isLogin', 'true');
-        localStorage.setItem('miUser', email);
-        localStorage.setItem('miPass', password);
+          localStorage.setItem('isLogin', 'true');
+          localStorage.setItem('miUser', email);
+          localStorage.setItem('miPass', password);
+
+          // Setear el token en el ApiService
+          ReservasApiClient.setApiToken(myMap['token'].toString());
+
+          updateTokenNotificaciones(
+            myMap['idUser'].toString(),
+            localStorage.getItem('miTokenNotificaciones')!.toString(),
+            myMap['token'].toString(),
+          );
+        } else {
+          print(2);
+          localStorage.removeItem('isLogin');
+          localStorage.removeItem('miIdUser');
+          localStorage.removeItem('miToken');
+          localStorage.removeItem('miIglesia');
+        }
       }
     } catch (e) {
-      localStorage.setItem('isLogin', 'false');
+      localStorage.removeItem('isLogin');
+      localStorage.removeItem('miIdUser');
+      localStorage.removeItem('miToken');
+      localStorage.removeItem('miIglesia');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('An error occurred: $e')),
       );
@@ -168,15 +229,15 @@ class _SplashScreenState extends State<SplashScreen> {
                   right: 0,
                   bottom: 0,
                   child: CachedNetworkImage(
-                    imageUrl: eventosList.evento![0].imagen ??
-                        "https://vallmarketing.es/app_assets/images/eventos/event-1.jpg",
+                    imageUrl:
+                        "${MainUtils.urlHostAssetsImagen}/${eventosList.evento![0].imagen}",
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image: imageProvider,
                           fit: BoxFit.cover,
-                          colorFilter: const ColorFilter.mode(
-                            Colors.red,
+                          colorFilter: ColorFilter.mode(
+                            ColorsUtils.principalColor,
                             BlendMode.colorBurn,
                           ),
                         ),
@@ -194,7 +255,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Positioned(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Colors.black.withOpacity(0.5),
+                      color: ColorsUtils.principalColor.withOpacity(0.2),
                     ),
                   ),
                 ),
@@ -211,7 +272,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.deepOrangeAccent,
+                        color: ColorsUtils.principalColor,
                         borderRadius: BorderRadius.circular(5),
                       ),
                       child: Padding(
@@ -223,9 +284,9 @@ class _SplashScreenState extends State<SplashScreen> {
                         child: Text(
                           'ENTRAR',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: ColorsUtils.blancoColor,
                             fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: FontWeight.normal,
                           ),
                         ),
                       ),
@@ -247,7 +308,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           eventosList.evento![0].titulo ?? "Titulo del evento",
                           style: TextStyle(
                             height: 1.1,
-                            color: Colors.white,
+                            color: ColorsUtils.blancoColor,
                             fontSize: 50,
                             fontWeight: FontWeight.bold,
                           ),
@@ -259,7 +320,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           eventosList.evento![0].descripcionCorta ??
                               "Descripcion corta del evento",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: ColorsUtils.blancoColor,
                             height: 1.1,
                             fontSize: 16,
                           ),
@@ -294,8 +355,8 @@ class _SplashScreenState extends State<SplashScreen> {
                     },
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.deepOrangeAccent,
-                        borderRadius: BorderRadius.circular(40),
+                        color: ColorsUtils.principalColor,
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(12.0),
@@ -303,7 +364,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           child: Text(
                             "Mas información",
                             style: TextStyle(
-                                color: Colors.white,
+                                color: ColorsUtils.blancoColor,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                                 fontFamily: 'Roboto'),

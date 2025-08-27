@@ -1,11 +1,12 @@
-import 'package:directorio_iglesias/controllers/eventosApiClient.dart';
-import 'package:directorio_iglesias/models/eventos.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
-import 'package:directorio_iglesias/widgets/detalleEvento.dart';
+import 'package:conexion_mas/controllers/eventosApiClient.dart';
+import 'package:conexion_mas/models/eventos.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/widgets/detalleEvento.dart';
 import 'package:flutter/material.dart';
 
 class CardMain extends StatelessWidget {
+  String idUser;
   String idEvento;
   String titulo;
   String tipo;
@@ -18,7 +19,8 @@ class CardMain extends StatelessWidget {
   PageController controller;
 
   CardMain(
-      {required this.idEvento,
+      {required this.idUser,
+      required this.idEvento,
       required this.titulo,
       required this.tipo,
       required this.descripcion,
@@ -36,17 +38,22 @@ class CardMain extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        EventosApiClient().getEventoById(int.parse(idEvento)).then((eventoItem) {
+        EventosApiClient()
+            .getEventoByIdByUser(int.parse(idEvento), idUser)
+            .then((eventoItem) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => DetalleEvento(evento: eventoItem, controller: controller)),
+            MaterialPageRoute(
+                builder: (context) =>
+                    DetalleEvento(evento: eventoItem, controller: controller)),
           );
         });
       },
       child: Padding(
-        padding: const EdgeInsets.all(5.0),
+        padding: const EdgeInsets.only(
+            left: 5.0, right: 5.0, top: 5.0, bottom: 15.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -58,7 +65,7 @@ class CardMain extends StatelessWidget {
                     height: 10,
                     width: 2,
                     decoration: BoxDecoration(
-                      color: ColorsUtils.segundoColor,
+                      color: ColorsUtils.principalColor,
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
@@ -74,8 +81,8 @@ class CardMain extends StatelessWidget {
                 Text(
                   frcaWidget.frca_getMesIniciales(int.parse(arrayFecha[1])),
                   style: TextStyle(
-                    color: ColorsUtils.segundoColor,
-                    fontSize: 16.0,
+                    color: ColorsUtils.blancoColor,
+                    fontSize: 14.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -85,7 +92,7 @@ class CardMain extends StatelessWidget {
                     height: 60,
                     width: 2,
                     decoration: BoxDecoration(
-                      color: ColorsUtils.segundoColor,
+                      color: ColorsUtils.principalColor,
                       borderRadius: BorderRadius.circular(5.0),
                     ),
                   ),
@@ -93,8 +100,8 @@ class CardMain extends StatelessWidget {
               ],
             ),
             Container(
-              width: MediaQuery.of(context).size.width - 80,
-              height: 170,
+              width: MediaQuery.of(context).size.width - 110,
+              height: 150,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10.0),
                 image: DecorationImage(
@@ -103,7 +110,7 @@ class CardMain extends StatelessWidget {
                 ),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color.fromARGB(255, 255, 108, 3).withOpacity(0.7),
+                    color: ColorsUtils.principalColor,
                     spreadRadius: 1,
                     blurRadius: 1,
                     offset: Offset(0, 0),
@@ -119,7 +126,8 @@ class CardMain extends StatelessWidget {
                     right: 0,
                     child: Container(
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
+                        color:
+                            const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
                       ),
                     ),
                   ),
@@ -138,11 +146,11 @@ class CardMain extends StatelessWidget {
                           ),
                           child: Padding(
                             padding: const EdgeInsets.only(
-                                top: 5.0, bottom: 5.0, left: 10.0, right: 10.0),
+                                top: 3.0, bottom: 3.0, left: 10.0, right: 10.0),
                             child: Text(
                               tipo,
                               style: TextStyle(
-                                fontSize: 12,
+                                fontSize: 11,
                                 color: ColorsUtils.principalColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -159,7 +167,7 @@ class CardMain extends StatelessWidget {
                           maxLines: 1,
                           style: TextStyle(
                             color: Colors.white,
-                            fontSize: 18.0,
+                            fontSize: 16.0,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -169,24 +177,24 @@ class CardMain extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Icon(Icons.info_outline,
-                                color: ColorsUtils.blancoColor, size: 18.0),
+                                color: ColorsUtils.blancoColor, size: 16.0),
                             SizedBox(width: 2.0),
                             Text(
                               etiqueta,
                               style: TextStyle(
                                 color: ColorsUtils.blancoColor,
-                                fontSize: 15.0,
+                                fontSize: 13.0,
                               ),
                             ),
                             SizedBox(width: 30.0),
                             Icon(Icons.access_time,
-                                color: ColorsUtils.blancoColor, size: 18.0),
+                                color: ColorsUtils.blancoColor, size: 16.0),
                             SizedBox(width: 2.0),
                             Text(
                               hora,
                               style: TextStyle(
                                 color: ColorsUtils.blancoColor,
-                                fontSize: 15.0,
+                                fontSize: 13.0,
                               ),
                             ),
                           ],

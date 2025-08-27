@@ -13,7 +13,7 @@ class ValidatorInputs {
 
   String? validateMobile(String? value) {
     // Indian Mobile number are of 10 digit only
-    if (value!.length != 9) {
+    if (value!.length < 9) {
       return 'El número de móvil debe tener 9 dígitos';
     } else {
       return null;

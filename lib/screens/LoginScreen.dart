@@ -1,9 +1,12 @@
 import 'dart:convert';
 
-import 'package:directorio_iglesias/controllers/AuthService.dart';
-import 'package:directorio_iglesias/pages/main.page.dart';
-import 'package:directorio_iglesias/screens/RegisterScreen.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
+import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/controllers/reservasApiClient.dart';
+import 'package:conexion_mas/helper/snackbar.dart';
+import 'package:conexion_mas/pages/main.page.dart';
+import 'package:conexion_mas/screens/RegisterScreen.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/validationForm.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -26,27 +29,63 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _emailController.text;
     final password = _passwordController.text;
 
+    if (email.isEmpty || password.isEmpty) {
+      AppSnackbar.show(
+        context,
+        message: 'Por favor, completa todos los campos',
+        type: SnackbarType.error,
+      );
+      return;
+    }
+
+    if (Validator.validateEmail(email) != null) {
+      AppSnackbar.show(
+        context,
+        message: Validator.validateEmail(email)!,
+        type: SnackbarType.error,
+      );
+      return;
+    }
+
     try {
       var iTems = await AuthService().login(email, password);
-      Map myMap = jsonDecode(iTems);
+      Map myMap = jsonDecode(iTems!);
 
-      localStorage.setItem('miToken', myMap['token'].toString());
-      localStorage.setItem('miIdUser', myMap['idUser'].toString());
-      localStorage.setItem('miEmail', myMap['email'].toString());
+      if (myMap['res']) {
+        localStorage.setItem('miToken', myMap['token'].toString());
+        localStorage.setItem('miIdUser', myMap['idUser'].toString());
+        localStorage.setItem('miEmail', myMap['email'].toString());
+        localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
 
-      localStorage.setItem('isLogin', 'true');
-      localStorage.setItem('miUser', email);
-      localStorage.setItem('miPass', password);
+        localStorage.setItem('isLogin', 'true');
+        localStorage.setItem('miUser', email);
+        localStorage.setItem('miPass', password);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MainPageView()),
-      );
+        // Setear el token en el ApiService
+        ReservasApiClient.setApiToken(myMap['token'].toString());
+
+        updateTokenNotificaciones(
+          myMap['idUser'].toString(),
+          localStorage.getItem('miTokenNotificaciones')!.toString(),
+          myMap['token'].toString(),
+        );
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MainPageView()),
+        );
+      } else {
+        AppSnackbar.show(
+          context,
+          message: myMap['message'],
+          type: SnackbarType.warning,
+        );
+      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           showCloseIcon: true,
-          backgroundColor: Colors.red,
+          backgroundColor: ColorsUtils.principalColor,
           content: Row(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,14 +93,15 @@ class _LoginScreenState extends State<LoginScreen> {
               Icon(
                 Icons.error,
                 size: 70,
-                color: Colors.white,
+                color: ColorsUtils.blancoColor,
               ),
               Expanded(
                 child: Text(
                   "Error de inicio de sesion. Intenta nuevamente",
                   maxLines: 5,
                   textAlign: TextAlign.center,
-                  style: TextStyle(fontSize: 18, color: Colors.white),
+                  style:
+                      TextStyle(fontSize: 18, color: ColorsUtils.blancoColor),
                 ),
               ),
             ],
@@ -71,10 +111,19 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  Future<void> updateTokenNotificaciones(
+      String idUser, String idDevice, String token) async {
+    await AuthService().updateTokenNotification(
+      idUser,
+      token,
+      idDevice,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorsUtils.blancoColor,
       body: Stack(
         children: [
           Positioned(
@@ -111,15 +160,16 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Inicia sesión para continuar.',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.black,
+                      color: ColorsUtils.negroColor,
                     ),
                   ),
                   SizedBox(height: 32),
-                  TextField(
+                  TextFormField(
+                    validator: Validator.validateEmail,
                     controller: _emailController,
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: ColorsUtils.negroColor),
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Colors.black),
+                      labelStyle: TextStyle(color: ColorsUtils.negroColor),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: ColorsUtils.principalColor),
@@ -141,12 +191,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  TextField(
+                  TextFormField(
                     controller: _passwordController,
                     obscureText: !_isPasswordVisible,
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(color: ColorsUtils.negroColor),
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Colors.black),
+                      labelStyle: TextStyle(color: ColorsUtils.negroColor),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
                             BorderSide(color: ColorsUtils.principalColor),
@@ -203,7 +253,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: ColorsUtils.blancoColor,
                         ),
                       ),
                     ),
@@ -214,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     children: [
                       Text(
                         '¿No tienes una cuenta?',
-                        style: TextStyle(color: Colors.black),
+                        style: TextStyle(color: ColorsUtils.negroColor),
                       ),
                       TextButton(
                         onPressed: () {

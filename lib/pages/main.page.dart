@@ -1,9 +1,9 @@
-import 'package:directorio_iglesias/screens/ChurchMapScreen.dart';
-import 'package:directorio_iglesias/screens/EventosScreen.dart';
-import 'package:directorio_iglesias/screens/LoginScreen.dart';
-import 'package:directorio_iglesias/screens/NotificacionesScreen.dart';
-import 'package:directorio_iglesias/screens/PerfilUsuarioScreen.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
+import 'package:conexion_mas/screens/ChurchMapScreen.dart';
+import 'package:conexion_mas/screens/EventosScreen.dart';
+import 'package:conexion_mas/screens/LoginScreen.dart';
+import 'package:conexion_mas/screens/MisReservasScreen.dart';
+import 'package:conexion_mas/screens/PerfilUsuarioScreen.dart';
+import 'package:conexion_mas/utils/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -64,7 +64,7 @@ class _MainPageViewState extends State<MainPageView> {
                 EventosScreen(), // SeatsScreen()
                 ChurchMapScreen(),
                 is_Login
-                    ? NotificacionesScreen()
+                    ? MisreservasScreen()
                     : LoginScreen(controller: _pageController),
                 is_Login
                     ? PerfilUsuarioScreen()

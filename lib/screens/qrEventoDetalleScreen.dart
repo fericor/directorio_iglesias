@@ -1,11 +1,14 @@
 import 'dart:io';
 
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
+import 'package:conexion_mas/models/eventosItems.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrEventoDetalleScreen extends StatefulWidget {
-  const QrEventoDetalleScreen({super.key});
+  EventosItems evento;
+  QrEventoDetalleScreen({super.key, required this.evento});
 
   @override
   State<QrEventoDetalleScreen> createState() => _QrEventoDetalleScreenState();
@@ -15,20 +18,9 @@ class _QrEventoDetalleScreenState extends State<QrEventoDetalleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorsUtils.fondoColor,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: 120,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xfff6f8fe),
-              ),
-            ),
-          ),
           Positioned(
             top: Platform.isAndroid ? 30 : 60,
             bottom: 0,
@@ -43,25 +35,25 @@ class _QrEventoDetalleScreenState extends State<QrEventoDetalleScreen> {
                     style: TextStyle(
                       color: ColorsUtils.principalColor,
                       fontWeight: FontWeight.bold,
-                      fontSize: 20,
+                      fontSize: 22,
                     ),
                   ),
                 ),
                 Text(
                   "Apunta este código QR al lugar del escaner",
-                  maxLines: 5,
+                  maxLines: 2,
                   style: TextStyle(
-                    color: ColorsUtils.segundoColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
+                    color: ColorsUtils.blancoColor,
+                    fontWeight: FontWeight.normal,
+                    fontSize: 15,
                   ),
                 ),
                 SizedBox(
-                  height: 10,
+                  height: 20,
                 ),
                 Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: ColorsUtils.blancoColor,
                     border: Border.all(
                       color: ColorsUtils.terceroColor,
                       width: 1,
@@ -71,82 +63,34 @@ class _QrEventoDetalleScreenState extends State<QrEventoDetalleScreen> {
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: const EdgeInsets.all(5.0),
                     child: QrImageView(
-                      data: '1234567890',
+                      data: widget.evento.reservas!.first.codigoReserva
+                          .toString(),
                       version: QrVersions.auto,
-                      size: 250.0,
+                      size: 200.0,
                     ),
                   ),
                 ),
                 Divider(
-                  height: 60,
-                  color: ColorsUtils.terceroColor,
+                  height: 40,
+                  color: ColorsUtils.principalColor,
                 ),
                 //////////////////////////
                 Text(
-                  'Nombre del evento',
+                  widget.evento.evento!.first.titulo ?? '',
                   style: TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    color: ColorsUtils.blancoColor,
                   ),
                 ),
                 ///////////////////////////////
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0,),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Nombre",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: ColorsUtils.terceroColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "Fecha",
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: ColorsUtils.terceroColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+                  padding: const EdgeInsets.only(
+                    left: 15.0,
+                    right: 15.0,
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0,),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Palacio real",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: ColorsUtils.segundoColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        "01/01/2025",
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: ColorsUtils.segundoColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 10),
-                ///////////////////////////////
-                Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0,),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -155,15 +99,15 @@ class _QrEventoDetalleScreenState extends State<QrEventoDetalleScreen> {
                         "Lugar",
                         style: TextStyle(
                           fontSize: 13,
-                          color: ColorsUtils.terceroColor,
+                          color: ColorsUtils.principalColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "Hora",
+                        "Fecha",
                         style: TextStyle(
                           fontSize: 13,
-                          color: ColorsUtils.terceroColor,
+                          color: ColorsUtils.principalColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -171,31 +115,198 @@ class _QrEventoDetalleScreenState extends State<QrEventoDetalleScreen> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(left: 20.0, right: 20.0,),
+                  padding: const EdgeInsets.only(
+                    left: 20.0,
+                    right: 20.0,
+                  ),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        "Aryo Romandhon",
+                        widget.evento.evento!.first.lugar ?? '',
                         style: TextStyle(
                           fontSize: 18,
-                          color: ColorsUtils.segundoColor,
+                          color: ColorsUtils.blancoColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       Text(
-                        "10:00 AM",
+                        MainUtils().formatFecha(
+                            widget.evento.evento!.first.fecha ?? ''),
                         style: TextStyle(
                           fontSize: 18,
-                          color: ColorsUtils.segundoColor,
+                          color: ColorsUtils.blancoColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 5),
+                ///////////////////////////////
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20.0,
+                    right: 20.0,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "Dirección",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: ColorsUtils.principalColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        "Hora",
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: ColorsUtils.principalColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 20.0,
+                    right: 20.0,
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        widget.evento.evento!.first.direccion ?? '',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: ColorsUtils.blancoColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        MainUtils()
+                            .formatHora(widget.evento.evento!.first.hora ?? ''),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: ColorsUtils.blancoColor,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                Divider(
+                  height: 40,
+                  color: ColorsUtils.principalColor,
+                ),
+                Column(
+                  children: [
+                    for (var item
+                        in widget.evento.reservas!.first.entradas ?? []) ...[
+                      Container(
+                        decoration: BoxDecoration(
+                          color: ColorsUtils.terceroColor,
+                          border: Border.all(
+                            color: ColorsUtils.principalColor,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(
+                            10,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: MediaQuery.of(context).size.width * 0.6,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Entrada",
+                                      textAlign: TextAlign.start,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: ColorsUtils.blancoColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                      item.tituloEventoItem ?? '',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: ColorsUtils.principalColor,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              ////////////////////
+                              Column(
+                                children: [
+                                  Text(
+                                    "Cantidad",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: ColorsUtils.blancoColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    item.cantidad ?? '',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: ColorsUtils.principalColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              ////////////////////
+                              Column(
+                                children: [
+                                  Text(
+                                    "Precio",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: ColorsUtils.blancoColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    item.subtotal ?? '',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      color: ColorsUtils.principalColor,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      ////////////////
+                      SizedBox(height: 10),
+                    ],
+                  ],
+                ),
               ],
             ),
           ),

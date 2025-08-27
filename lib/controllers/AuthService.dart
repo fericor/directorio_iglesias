@@ -1,4 +1,4 @@
-import 'package:directorio_iglesias/utils/mainUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
@@ -8,7 +8,7 @@ class AuthService {
 
   final String baseUrl = MainUtils.urlHostApi;
 
-  login(String email, String password) async {
+  Future<String?>? login(String email, String password) async {
     final url = Uri.parse('$baseUrl/login');
 
     try {
@@ -20,6 +20,8 @@ class AuthService {
 
       if (response.statusCode == 200) {
         return response.body;
+      } else if (response.statusCode == 431) {
+        return response.body;
       } else {
         return null;
       }
@@ -28,7 +30,7 @@ class AuthService {
     }
   }
 
-  infoUser(String idUser, String token) async {
+  Future<String?>? infoUser(String idUser, String token) async {
     final url = Uri.parse('$baseUrl/usuarios/$idUser?api_token=$token');
 
     try {
@@ -47,8 +49,9 @@ class AuthService {
     }
   }
 
-  infoAjustes(String idEmpresa, String token) async {
-    final url = Uri.parse('$baseUrl/sistema/getAjustes/$idEmpresa?api_token=$token');
+  Future<String?>? infoAjustes(String idEmpresa, String token) async {
+    final url =
+        Uri.parse('$baseUrl/sistema/getAjustes/$idEmpresa?api_token=$token');
 
     try {
       final response = await http.get(
@@ -66,14 +69,25 @@ class AuthService {
     }
   }
 
-  register(String nombre, telefono, email, password) async {
+  Future<String?>? register(
+      String nombre, telefono, email, password, iglesiaId) async {
     final url = Uri.parse('$baseUrl/register');
 
     try {
       final response = await http.post(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'nombre': nombre, 'apellidos': '', 'nacimiento': '2025/01/01', 'telefono': telefono, 'email': email, 'password': password, 'role': '10', 'activo': '1',}),
+        body: jsonEncode({
+          'idIglesia': iglesiaId,
+          'nombre': nombre,
+          'apellidos': '',
+          'nacimiento': '2025/01/01',
+          'telefono': telefono,
+          'email': email,
+          'password': password,
+          'role': '10',
+          'activo': '0',
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -86,8 +100,9 @@ class AuthService {
     }
   }
 
-  changePass(String idUser, passOld, passNew, token) async {
-    final url = Uri.parse('$baseUrl/usuarios/changePassword/$idUser?api_token=$token');
+  Future<String?>? changePass(String idUser, passOld, passNew, token) async {
+    final url =
+        Uri.parse('$baseUrl/usuarios/changePassword/$idUser?api_token=$token');
 
     try {
       final response = await http.put(
@@ -106,15 +121,51 @@ class AuthService {
     }
   }
 
-  updateProfiler(String idUser, nombre, apellidos, nacimiento, telefono, email, token) async {
+  Future<String?>? updateProfiler(String idUser, nombre, apellidos, nacimiento,
+      telefono, email, token) async {
     final url = Uri.parse('$baseUrl/usuarios/$idUser?api_token=$token');
 
     try {
       final response = await http.put(
         url,
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'nombre': nombre, 'apellidos': apellidos, 'nacimiento': nacimiento, 'telefono': telefono, 'email': email,}),
+        body: jsonEncode({
+          'nombre': nombre,
+          'apellidos': apellidos,
+          'nacimiento': nacimiento,
+          'telefono': telefono,
+          'email': email,
+        }),
       );
+
+      if (response.statusCode == 200) {
+        return response.body;
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception('Error logging in: $e');
+    }
+  }
+
+  Future<String?>? updateTokenNotification(
+      String idUser, String token, String idDevice) async {
+    final url = Uri.parse(
+        '$baseUrl/usuarios/cambiarTokenNotification/$idUser?api_token=$token');
+
+    try {
+      final response = await http.put(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({
+          'idDevice': idDevice,
+        }),
+      );
+
+      print("HOLA: ");
+      print(
+          '$baseUrl/usuarios/cambiarTokenNotification/$idUser?api_token=$token');
+      print(response.body);
 
       if (response.statusCode == 200) {
         return response.body;
@@ -165,5 +216,4 @@ class AuthService {
       return null;
     }
   }*/
-
 }

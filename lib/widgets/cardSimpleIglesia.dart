@@ -1,6 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/mainUtils.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
 
 class CardSimpleIglesia extends StatelessWidget {
@@ -24,147 +24,167 @@ class CardSimpleIglesia extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 320,
-      margin: EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
-        color: Colors.grey[200],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(5.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              width: 60,
-              height: 60,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: Colors.white
+    return Row(
+      children: [
+        Container(
+          width: MediaQuery.of(context).size.width - 60,
+          margin: EdgeInsets.all(4),
+          decoration: BoxDecoration(
+            color: ColorsUtils.terceroColor,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: ColorsUtils.principalColor.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 1,
+                offset: Offset(0, 0), // changes position of shadow
               ),
-              child: CachedNetworkImage(
-                imageUrl:
-                    "https://vallmarketing.es/app_assets/images/iglesias/iglesia_$idIglesia.png",
-                imageBuilder: (context, imageProvider) => Container(
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: imageProvider,
-                        fit: BoxFit.cover,
-                        colorFilter: ColorFilter.mode(
-                            Colors.white, BlendMode.colorBurn)),
-                  ),
-                ),
-                placeholder: (context, url) =>
-                    Center(child: CircularProgressIndicator()),
-                errorWidget: (context, url, error) => Image.network(
-                  "https://vallmarketing.es/app_assets/images/iglesias/iglesia_0.jpg",
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
-              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: 5.0,
+              bottom: 5.0,
+              left: 10.0,
+              right: 10.0,
             ),
-            SizedBox(
-              width: 5,
-            ),
-            SizedBox(
-              width: 210,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  FutureBuilder<double>(
-                    future: MainUtils().calculateDistanceUsingGeolocator(
-                        miLatitud, miLongitud, latitud, longitud),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Text(
-                          "Calculando distancia...",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 14.0,
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Text(
-                          "Error calculando distancia",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                          ),
-                        );
-                      } else {
-                        return Text(
-                          "Distancia: ${snapshot.data!.toStringAsFixed(2)}km",
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 16.0,
-                          ),
-                        );
-                      }
-                    },
-                  ),
-                  Text(
-                    iglesia,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Column(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
-                  width: 35,
-                  height: 35,
+                  width: 45,
+                  height: 45,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  ),
-                  child: IconButton(
-                    onPressed: () {
-                      MainUtils().openMap(latitud, longitud);
-                    },
-                    icon: Icon(
-                      Icons.near_me,
-                      size: 20,
-                      color: ColorsUtils.principalColor,
+                      borderRadius: BorderRadius.circular(10),
+                      color: ColorsUtils.blancoColor),
+                  child: CachedNetworkImage(
+                    imageUrl:
+                        "${MainUtils.urlHostAssetsImagen}/iglesias/iglesia_$idIglesia.png",
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                            colorFilter: ColorFilter.mode(
+                                ColorsUtils.blancoColor, BlendMode.colorBurn)),
+                      ),
+                    ),
+                    placeholder: (context, url) =>
+                        Center(child: CircularProgressIndicator()),
+                    errorWidget: (context, url, error) => Image.network(
+                      "${MainUtils.urlHostAssetsImagen}/iglesias/iglesia_0.jpg",
+                      fit: BoxFit.cover,
+                      width: double.infinity,
                     ),
                   ),
                 ),
                 SizedBox(
-                  height: 4,
+                  width: 5,
                 ),
-                // LLAMAR
-                Container(
-                  width: 35,
-                  height: 35,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                SizedBox(
+                  width: 225,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      FutureBuilder<double>(
+                        future: MainUtils().calculateDistanceUsingGeolocator(
+                            miLatitud, miLongitud, latitud, longitud),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Text(
+                              "Calculando distancia...",
+                              style: TextStyle(
+                                color: ColorsUtils.blancoColor,
+                                fontSize: 14.0,
+                              ),
+                            );
+                          } else if (snapshot.hasError) {
+                            return Text(
+                              "Error calculando distancia",
+                              style: TextStyle(
+                                color: ColorsUtils.blancoColor,
+                                fontSize: 16.0,
+                              ),
+                            );
+                          } else {
+                            return Text(
+                              "Distancia: ${snapshot.data!.toStringAsFixed(2)}km",
+                              style: TextStyle(
+                                color: ColorsUtils.blancoColor,
+                                fontSize: 16.0,
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                      Text(
+                        iglesia,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: ColorsUtils.blancoColor,
+                          fontSize: 16.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
-                  child: IconButton(
-                    onPressed: () {
-                      MainUtils().calTel(telefono);
-                    },
-                    icon: Icon(
-                      Icons.phone,
-                      size: 20,
-                      color: ColorsUtils.principalColor,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    /*Container(
+                      width: 32,
+                      height: 32,
+                      decoration: BoxDecoration(
+                        color: ColorsUtils.blancoColor,
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          MainUtils().openMap(latitud, longitud);
+                        },
+                        icon: Icon(
+                          Icons.near_me,
+                          size: 17,
+                          color: ColorsUtils.principalColor,
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(
+                      height: 2,
+                    ),*/
+                    // LLAMAR
+                    Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: ColorsUtils.blancoColor,
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      ),
+                      child: IconButton(
+                        onPressed: () {
+                          MainUtils().calTel(telefono);
+                        },
+                        icon: Icon(
+                          Icons.phone,
+                          size: 25,
+                          color: ColorsUtils.principalColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
+          ),
         ),
-      ),
+        SizedBox(width: 5.0),
+      ],
     );
   }
 }

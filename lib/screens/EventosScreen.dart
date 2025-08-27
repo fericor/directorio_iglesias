@@ -1,13 +1,16 @@
-import 'package:directorio_iglesias/controllers/eventosApiClient.dart';
-import 'package:directorio_iglesias/controllers/iglesiasApiClient.dart';
-import 'package:directorio_iglesias/models/eventos.dart';
-import 'package:directorio_iglesias/models/iglesias.dart';
-import 'package:directorio_iglesias/utils/colorsUtils.dart';
-import 'package:directorio_iglesias/utils/widgets.dart';
-import 'package:directorio_iglesias/widgets/cardMain.dart';
-import 'package:directorio_iglesias/widgets/cardSimpleIglesia.dart';
+import 'package:conexion_mas/controllers/eventosApiClient.dart';
+import 'package:conexion_mas/controllers/iglesiasApiClient.dart';
+import 'package:conexion_mas/models/categorias.dart';
+import 'package:conexion_mas/models/eventos.dart';
+import 'package:conexion_mas/models/iglesias.dart';
+import 'package:conexion_mas/models/misreservas.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
+import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/widgets/cardMain.dart';
+import 'package:conexion_mas/widgets/cardSimpleEvento.dart';
+import 'package:conexion_mas/widgets/cardSimpleIglesia.dart';
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
 
 import 'package:localstorage/localstorage.dart';
 
@@ -19,9 +22,15 @@ class EventosScreen extends StatefulWidget {
 }
 
 class _EventosScreenState extends State<EventosScreen> {
+  int _selectedIndex = 0;
+  List<Categorias> _categocategoriasListrias = [];
   late List<Eventos> eventosList = [];
   late List<Eventos> eventosListSearch = [];
   late List<Iglesias> churches = [];
+  late List<MisReservas> misReservas = [];
+
+  String idUser = localStorage.getItem('miIdUser').toString() ?? '0';
+  String apiToken = localStorage.getItem('miToken').toString() ?? '0';
   double miLongitud = 0.0;
   double miLatitud = 0.0;
   double distancia = 5.0;
@@ -29,13 +38,36 @@ class _EventosScreenState extends State<EventosScreen> {
   bool _loadingEventos = true;
   bool _loadingIglesias = true;
   int _num = 0;
+  bool is_Login = false;
+  int idIglesia = 0;
 
   @override
   void initState() {
     super.initState();
 
+    is_Login = localStorage.getItem('isLogin') == 'true';
+
+    initEventosIsLogin();
     listarIglesiasCerca();
-    listarEventosTodos();
+    listarEventosCategoriasTodos();
+  }
+
+  void initEventosIsLogin() {
+    if (is_Login) {
+      idIglesia = int.parse(localStorage.getItem('miIglesia').toString());
+      listarEventosIglesia(idIglesia);
+      listarEventosByIdUser(idUser);
+    } else {
+      listarEventosTodos();
+    }
+  }
+
+  void listarEventosCategoriasTodos() {
+    EventosApiClient().getEventosCategorias().then((categorias) {
+      setState(() {
+        _categocategoriasListrias = categorias;
+      });
+    });
   }
 
   void listarEventosTodos() {
@@ -44,6 +76,24 @@ class _EventosScreenState extends State<EventosScreen> {
         eventosList = eventos;
         eventosListSearch = eventos;
         _loadingEventos = false;
+      });
+    });
+  }
+
+  void listarEventosIglesia(int idIglesia) {
+    EventosApiClient().getEventosIglesia(idIglesia).then((eventos) {
+      setState(() {
+        eventosList = eventos;
+        eventosListSearch = eventos;
+        _loadingEventos = false;
+      });
+    });
+  }
+
+  void listarEventosByIdUser(String idUser) {
+    EventosApiClient().getEventoByUser(idUser, apiToken).then((reservas) {
+      setState(() {
+        misReservas = reservas;
       });
     });
   }
@@ -119,23 +169,12 @@ class _EventosScreenState extends State<EventosScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorsUtils.fondoColor,
       body: Stack(
         children: [
-          Positioned(
-            top: 0,
-            bottom: 0,
-            left: 120,
-            right: 0,
-            child: Container(
-              decoration: BoxDecoration(
-                color: Color(0xfff6f8fe),
-              ),
-            ),
-          ),
           // BUSCADOR
           Positioned(
-            top: Platform.isAndroid ? 30 : 60,
+            top: 55,
             left: 15,
             right: 15,
             child: frcaWidget.frca_buscador(
@@ -143,26 +182,46 @@ class _EventosScreenState extends State<EventosScreen> {
           ),
           // LISTA DE CATEGORIAS
           Positioned(
-            top: Platform.isAndroid ? 100 : 130,
+            top: 120,
             left: 20,
             right: 20,
-            child: frcaWidget.frca_categori_list(listarEventosDistrito, _num),
+            child: frcaWidget.frca_categori_list(
+                listarEventosDistrito, _num, _categocategoriasListrias),
           ),
           //CONTENIDO
           Positioned(
-            top: Platform.isAndroid ? 140 : 170,
+            top: 160,
             left: 10,
             right: 10,
-            bottom: 220,
+            bottom: 355,
             child: _loadingEventos
                 ? frcaWidget.frca_loading_simple()
                 : eventosList.isNotEmpty
                     ? SingleChildScrollView(
                         child: Column(
                           children: [
+                            /*ElevatedButton(
+                              onPressed: () {
+                                // Navegación manual de prueba
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        NotificationDetailScreen(
+                                      notificationTitle: 'Prueba',
+                                      notificationContent:
+                                          'Esta es una prueba de navegación',
+                                      data: {'id': 'test123', 'type': 'test'},
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: Text('Probar Navegación'),
+                            ),*/
                             //////////
                             for (var evento in eventosList)
                               CardMain(
+                                idUser: idUser,
                                 idEvento: evento.idEvento!.toString(),
                                 titulo: evento.titulo!,
                                 descripcion: evento.descripcionCorta!,
@@ -170,7 +229,8 @@ class _EventosScreenState extends State<EventosScreen> {
                                 hora: evento.hora!,
                                 etiqueta: evento.etiqueta!,
                                 tipo: evento.tipo!,
-                                imagen: evento.imagen!,
+                                imagen:
+                                    "${MainUtils.urlHostAssetsImagen}/${evento.imagen!}",
                                 evento: [evento],
                                 controller: PageController(),
                               ),
@@ -180,13 +240,87 @@ class _EventosScreenState extends State<EventosScreen> {
                       )
                     : frcaWidget.frca_not_lista(),
           ),
-          // IGLESIAS CERCA
+          // MIS EVENTOS & IGLESIAS CERCA
           Positioned(
             left: 15,
             right: 15,
-            bottom: 75,
+            bottom: 85,
             child: Column(
               children: [
+                frcaWidget.frca_texto_header(
+                  is_Login
+                      ? "Mis eventos apuntados"
+                      : "Eventos destacados cerca de ti",
+                  SizedBox(),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                is_Login
+                    ? misReservas.isNotEmpty
+                        ? Column(
+                            children: [
+                              for (var reserva in misReservas)
+                                if (reserva.miseventos != null &&
+                                    reserva.miseventos!.isNotEmpty) ...[
+                                  for (var evento in reserva.miseventos!)
+                                    CardSimpleEvento(
+                                      idUser: idUser,
+                                      idEvento: evento.idEvento!.toString(),
+                                      titulo: evento.titulo!,
+                                      descripcion: evento.descripcionCorta!,
+                                      fecha: evento.fecha!,
+                                      hora: evento.hora!,
+                                      etiqueta: evento.etiqueta!,
+                                      tipo: evento.tipo!,
+                                      imagen:
+                                          "${MainUtils.urlHostAssetsImagen}/${evento.imagen!}",
+                                      controller: PageController(),
+                                    ),
+                                ] else
+                                  frcaWidget.frca_not_lista_txt(
+                                      "No hay eventos cerca"),
+                            ],
+                          )
+                        : frcaWidget.frca_not_lista_txt("No hay eventos cerca")
+                    : _loadingIglesias // AQUI ES CUANDO NO ESTO LOGUEADO
+                        ? frcaWidget.frca_loading_simple()
+                        : churches.isNotEmpty
+                            ? SizedBox(
+                                height: 110,
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: [
+                                    for (var church in churches)
+                                      if (church
+                                          .eventosIglesia!.isNotEmpty) ...[
+                                        for (var evento
+                                            in church.eventosIglesia ?? [])
+                                          CardSimpleEvento(
+                                            idUser: idUser,
+                                            idEvento:
+                                                evento.idEvento!.toString(),
+                                            titulo: evento.titulo!,
+                                            descripcion:
+                                                evento.descripcionCorta!,
+                                            fecha: evento.fecha!,
+                                            hora: evento.hora!,
+                                            etiqueta: evento.etiqueta!,
+                                            tipo: evento.tipo!,
+                                            imagen:
+                                                "${MainUtils.urlHostAssetsImagen}/${evento.imagen!}",
+                                            controller: PageController(),
+                                          ),
+                                      ] else
+                                        frcaWidget.frca_not_lista_txt(
+                                            "No hay eventos cerca"),
+                                  ],
+                                ),
+                              )
+                            : frcaWidget
+                                .frca_not_lista_txt("No hay eventos cerca"),
+
+                ///////////////
                 frcaWidget.frca_texto_header(
                     "${churches.length} iglesias cerca a ${distancia}km",
                     popupMenuIglesias()),
@@ -194,7 +328,7 @@ class _EventosScreenState extends State<EventosScreen> {
                     ? frcaWidget.frca_loading_simple()
                     : churches.isNotEmpty
                         ? SizedBox(
-                            height: 95,
+                            height: 70,
                             child: ListView(
                               scrollDirection: Axis.horizontal,
                               children: [
