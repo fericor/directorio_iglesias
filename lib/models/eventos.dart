@@ -1,5 +1,7 @@
 class Eventos {
   int? idEvento;
+  int? idOrganizacion;
+  int? idIglesia;
   String? fecha;
   String? hora;
   String? fechaFin;
@@ -14,14 +16,17 @@ class Eventos {
   int? distrito;
   int? region;
   int? activo;
+  int? esGratis;
 
   Eventos({
-    this.idEvento, 
-    this.fecha, 
-    this.hora, 
-    this.fechaFin, 
-    this.horaFin, 
-    this.titulo, 
+    this.idEvento,
+    this.idOrganizacion,
+    this.idIglesia,
+    this.fecha,
+    this.hora,
+    this.fechaFin,
+    this.horaFin,
+    this.titulo,
     this.descripcion,
     this.etiqueta,
     this.tipo,
@@ -31,11 +36,14 @@ class Eventos {
     this.distrito,
     this.region,
     this.activo,
-   });
+    this.esGratis,
+  });
 
   factory Eventos.fromJson(Map<String, dynamic> json) {
     return Eventos(
       idEvento: json['idEvento'],
+      idOrganizacion: json['idOrganizacion'],
+      idIglesia: json['idIglesia'],
       fecha: json['fecha'],
       hora: json['hora'],
       fechaFin: json['fechaFin'],
@@ -50,6 +58,7 @@ class Eventos {
       distrito: json['distrito'],
       region: json['region'],
       activo: json['activo'],
+      esGratis: json['esGratis'],
     );
   }
 }

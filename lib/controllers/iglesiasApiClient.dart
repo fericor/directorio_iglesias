@@ -1,3 +1,4 @@
+import 'package:conexion_mas/models/Pastores.dart';
 import 'package:conexion_mas/models/iglesia.dart';
 import 'package:conexion_mas/models/iglesias.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
@@ -30,6 +31,7 @@ class IglesiasApiClient {
       String latitud, longitud, distancia) async {
     final response = await _httpClient.get(Uri.parse(
         '$_baseUrl/frcaListarIglesiasCerca/$latitud/$longitud/$distancia'));
+
     if (response.statusCode == 200) {
       return (jsonDecode(response.body) as List)
           .map((jsonIglesias) => Iglesias.fromJson(jsonIglesias))
@@ -58,6 +60,16 @@ class IglesiasApiClient {
       return Iglesias.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Error al obtener la tarea con ID $id');
+    }
+  }
+
+  Future<Pastores>? infoPastor(String idPastor, String token) async {
+    final response =
+        await _httpClient.get(Uri.parse('$_baseUrl/pastorById/$idPastor'));
+    if (response.statusCode == 200) {
+      return Pastores.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Error al obtener la tarea con ID $idPastor');
     }
   }
 

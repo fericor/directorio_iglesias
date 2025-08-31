@@ -1,6 +1,10 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conexion_mas/controllers/eventosApiClient.dart';
 import 'package:conexion_mas/models/eventos.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/utils/widgets.dart';
 import 'package:conexion_mas/widgets/detalleEvento.dart';
 import 'package:flutter/material.dart';
@@ -36,6 +40,23 @@ class CardMain extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Widget> etiquetasWidgets = (jsonDecode(etiqueta) as List<dynamic>)
+        .map<String>((e) => e.toString()) // Convertimos cada elemento a String
+        .take(3) // Limita a los primeros 3 elementos
+        .map<Widget>((txt) => Row(
+              children: [
+                Text(
+                  txt,
+                  style: TextStyle(
+                    color: ColorsUtils.blancoColor,
+                    fontSize: 13.0,
+                  ),
+                ),
+                SizedBox(width: 5),
+              ],
+            ))
+        .toList();
+
     return GestureDetector(
       onTap: () {
         EventosApiClient()
@@ -101,18 +122,14 @@ class CardMain extends StatelessWidget {
             ),
             Container(
               width: MediaQuery.of(context).size.width - 110,
-              height: 150,
+              height: 155,
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                image: DecorationImage(
-                  image: NetworkImage(imagen),
-                  fit: BoxFit.cover,
-                ),
+                borderRadius: BorderRadius.circular(0.0),
                 boxShadow: [
                   BoxShadow(
                     color: ColorsUtils.principalColor,
                     spreadRadius: 1,
-                    blurRadius: 1,
+                    blurRadius: 2,
                     offset: Offset(0, 0),
                   ),
                 ],
@@ -120,14 +137,41 @@ class CardMain extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned(
-                    bottom: 22,
+                    top: 0,
                     left: 0,
-                    top: 55,
                     right: 0,
+                    bottom: 0,
+                    child: CachedNetworkImage(
+                      fit: BoxFit.cover,
+                      imageUrl: imagen,
+                      imageBuilder: (context, imageProvider) => Container(
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: imageProvider,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      placeholder: (context, url) => SizedBox(
+                          width: 50,
+                          height: 50,
+                          child: const LinearProgressIndicator()),
+                      errorWidget: (context, url, error) => Image.network(
+                        "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
+                        fit: BoxFit.cover,
+                        width: double.infinity,
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
                     child: Container(
                       decoration: BoxDecoration(
                         color:
-                            const Color.fromARGB(255, 0, 0, 0).withOpacity(0.7),
+                            const Color.fromARGB(255, 0, 0, 0).withOpacity(0.5),
                       ),
                     ),
                   ),
@@ -151,12 +195,14 @@ class CardMain extends StatelessWidget {
                               tipo,
                               style: TextStyle(
                                 fontSize: 11,
+                                letterSpacing: 1,
                                 color: ColorsUtils.principalColor,
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           ),
                         ),
+                        ////////////////////////////
                         SizedBox(
                           height: 15,
                         ),
@@ -179,14 +225,12 @@ class CardMain extends StatelessWidget {
                             Icon(Icons.info_outline,
                                 color: ColorsUtils.blancoColor, size: 16.0),
                             SizedBox(width: 2.0),
-                            Text(
-                              etiqueta,
-                              style: TextStyle(
-                                color: ColorsUtils.blancoColor,
-                                fontSize: 13.0,
-                              ),
+                            /////////////////////////////
+                            Row(
+                              children: etiquetasWidgets,
                             ),
-                            SizedBox(width: 30.0),
+                            /////////////////////
+                            SizedBox(width: 20.0),
                             Icon(Icons.access_time,
                                 color: ColorsUtils.blancoColor, size: 16.0),
                             SizedBox(width: 2.0),

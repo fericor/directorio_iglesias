@@ -1,10 +1,14 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conexion_mas/controllers/eventosApiClient.dart';
 import 'package:conexion_mas/controllers/notificacionesApiClient.dart';
 import 'package:conexion_mas/controllers/reservasApiClient.dart';
 import 'package:conexion_mas/models/reservas.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/widgets/detalleEvento.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -41,7 +45,6 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
   // Obtener reservas de usuario
   Future<void> obtenerReservasUsuario() async {
     final result = await ReservasApiClient.obtenerReservasUsuario(idUser);
-    print(result);
 
     if (result['success'] == true) {
       setState(() {
@@ -60,14 +63,14 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
       body: Stack(
         children: [
           Positioned(
-            top: Platform.isAndroid ? 30 : 60,
+            top: 70,
             left: 20,
             right: 20,
             child: frcaWidget.frca_texto_header(
                 "Mis Reservas", popupMenuIglesias()),
           ),
           Positioned(
-            top: Platform.isAndroid ? 80 : 110,
+            top: 120,
             left: 20,
             right: 20,
             bottom: 0,
@@ -86,69 +89,59 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
                         child: ListTile(
                           leading: ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
-                            child: Icon(
-                              Icons.notifications,
-                              size: 40.0,
-                              color: ColorsUtils.principalColor,
+                            child: Container(
+                              width: 65,
+                              height: 65,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: ColorsUtils.blancoColor),
+                              child: CachedNetworkImage(
+                                imageUrl:
+                                    "${MainUtils.urlHostAssetsImagen}/${item.evento!.imagen}",
+                                imageBuilder: (context, imageProvider) =>
+                                    Container(
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                        image: imageProvider,
+                                        fit: BoxFit.cover,
+                                        colorFilter: ColorFilter.mode(
+                                            ColorsUtils.blancoColor,
+                                            BlendMode.colorBurn)),
+                                  ),
+                                ),
+                                placeholder: (context, url) =>
+                                    Center(child: CircularProgressIndicator()),
+                                errorWidget: (context, url, error) =>
+                                    Image.network(
+                                  "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
+                                  fit: BoxFit.cover,
+                                  width: double.infinity,
+                                ),
+                              ),
                             ),
                           ),
                           title: Text(
-                            item.evento!.titulo,
+                            item.evento!.titulo ?? '',
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18.0,
                             ),
                           ),
-                          subtitle: Text(item.evento!.tieneAsientos
-                              ? "Con asientos"
-                              : "Sin asientos"),
+                          subtitle: Text(item.evento!.descripcionCorta ?? ''),
                           trailing: Icon(Icons.arrow_forward_ios, size: 16.0),
                           onTap: () {
-                            cancelarReserva(item.codigoReserva);
-                            // Acción al tocar la tarjeta
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                showCloseIcon: true,
-                                duration: Duration(seconds: 60),
-                                content: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: ColorsUtils.blancoColor,
-                                          borderRadius:
-                                              BorderRadius.circular(8.0),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Icon(
-                                            Icons.notifications,
-                                            size: 60,
-                                            color: ColorsUtils.principalColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Text(
-                                      item.evento!.titulo,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 22.0,
-                                      ),
-                                    ),
-                                    Text(
-                                      item.evento!.activo
-                                          ? "Activo"
-                                          : "Inactivo",
-                                      style: TextStyle(fontFamily: "Roboto"),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
+                            EventosApiClient()
+                                .getEventoByIdByUser(
+                                    int.parse(item.evento!.idEvento), idUser)
+                                .then((eventoItem) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => DetalleEvento(
+                                        evento: eventoItem,
+                                        controller: PageController())),
+                              );
+                            });
                           },
                         ),
                       );

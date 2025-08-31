@@ -162,11 +162,6 @@ class AuthService {
         }),
       );
 
-      print("HOLA: ");
-      print(
-          '$baseUrl/usuarios/cambiarTokenNotification/$idUser?api_token=$token');
-      print(response.body);
-
       if (response.statusCode == 200) {
         return response.body;
       } else {

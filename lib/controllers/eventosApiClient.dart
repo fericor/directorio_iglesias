@@ -1,3 +1,4 @@
+import 'package:conexion_mas/models/MisEventos.dart';
 import 'package:conexion_mas/models/categorias.dart';
 import 'package:conexion_mas/models/eventos.dart';
 import 'package:conexion_mas/models/eventosItems.dart';
@@ -61,6 +62,18 @@ class EventosApiClient {
     }
   }
 
+  Future<List<Categorias>> getEventosCategoriasIglesia(int idIglesia) async {
+    final response = await _httpClient.get(
+        Uri.parse('$_baseUrl/frcaListarEventoscategoriasIglesia/$idIglesia'));
+    if (response.statusCode == 200) {
+      return (jsonDecode(response.body) as List)
+          .map((jsonEventos) => Categorias.fromJson(jsonEventos))
+          .toList();
+    } else {
+      throw Exception('Error al obtener la lista de eventos');
+    }
+  }
+
   Future<List<Eventos>> getEventosRegion(String idRegion) async {
     final response = await _httpClient
         .get(Uri.parse('$_baseUrl/frcaListarEventosRegion/$idRegion'));
@@ -92,6 +105,8 @@ class EventosApiClient {
       throw Exception('Error al obtener la tarea con ID $id');
     }
   }
+
+  
 
   Future<List<MisReservas>> getEventoByUser(
       String idUser, String apiToken) async {
@@ -138,9 +153,9 @@ class EventosApiClient {
     }
   }
 
-  Future<void> updateEventos(Eventos Eventos) async {
+  Future<void> editarEvento(MisEventos Eventos, String token) async {
     final response = await _httpClient.put(
-        Uri.parse('$_baseUrl/Eventoss/${Eventos.idEvento}'),
+        Uri.parse('$_baseUrl/eventos/${Eventos.idEvento}?api_token=$token'),
         body: jsonEncode(Eventos));
     if (response.statusCode == 200) {
       // La tarea se actualizó correctamente

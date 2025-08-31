@@ -1,5 +1,6 @@
 import 'package:conexion_mas/controllers/notifications_service.dart';
 import 'package:conexion_mas/screens/SplashScreen.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
@@ -23,9 +24,16 @@ class ChurchDirectoryApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Conexión +',
       theme: ThemeData(
-          fontFamily: 'Roboto',
-          primarySwatch: Colors.deepPurple,
-          brightness: Brightness.dark),
+        fontFamily: 'Roboto',
+        primarySwatch: Colors.deepPurple,
+        brightness: Brightness.dark,
+        appBarTheme: AppBarTheme(
+          backgroundColor: ColorsUtils.fondoColor,
+          foregroundColor: ColorsUtils.fondoColor,
+          iconTheme: IconThemeData(color: ColorsUtils.blancoColor),
+          actionsIconTheme: IconThemeData(color: ColorsUtils.blancoColor),
+        ),
+      ),
       home: SplashScreen(),
     );
   }

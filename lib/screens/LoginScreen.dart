@@ -56,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
         localStorage.setItem('miIdUser', myMap['idUser'].toString());
         localStorage.setItem('miEmail', myMap['email'].toString());
         localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
+        localStorage.setItem('miOranizacion', myMap['idOrganizacion'].toString());
 
         localStorage.setItem('isLogin', 'true');
         localStorage.setItem('miUser', email);
@@ -78,35 +79,14 @@ class _LoginScreenState extends State<LoginScreen> {
         AppSnackbar.show(
           context,
           message: myMap['message'],
-          type: SnackbarType.warning,
+          type: SnackbarType.error,
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          showCloseIcon: true,
-          backgroundColor: ColorsUtils.principalColor,
-          content: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.error,
-                size: 70,
-                color: ColorsUtils.blancoColor,
-              ),
-              Expanded(
-                child: Text(
-                  "Error de inicio de sesion. Intenta nuevamente",
-                  maxLines: 5,
-                  textAlign: TextAlign.center,
-                  style:
-                      TextStyle(fontSize: 18, color: ColorsUtils.blancoColor),
-                ),
-              ),
-            ],
-          ),
-        ),
+      AppSnackbar.show(
+        context,
+        message: "Error de inicio de sesion. Intenta nuevamente",
+        type: SnackbarType.warning,
       );
     }
   }

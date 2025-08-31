@@ -95,21 +95,23 @@ class frcaWidget {
       children: <Widget>[
         // DIAS
         Container(
-          width: 70.0,
-          height: 70.0,
+          width: 60.0,
+          height: 60.0,
           decoration: BoxDecoration(
             color: ColorsUtils.principalColor,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Días",
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 12.0,
+                    fontSize: 10.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
                   ),
@@ -118,7 +120,7 @@ class frcaWidget {
                   dias,
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 30.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -131,21 +133,23 @@ class frcaWidget {
         ),
         // HORAS
         Container(
-          width: 70.0,
-          height: 70.0,
+          width: 60.0,
+          height: 60.0,
           decoration: BoxDecoration(
             color: ColorsUtils.principalColor,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Horas",
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 12.0,
+                    fontSize: 10.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
                   ),
@@ -154,7 +158,7 @@ class frcaWidget {
                   horas,
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 30.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -167,21 +171,23 @@ class frcaWidget {
         ),
         // MINUTOS
         Container(
-          width: 70.0,
-          height: 70.0,
+          width: 60.0,
+          height: 60.0,
           decoration: BoxDecoration(
             color: ColorsUtils.principalColor,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Minutos",
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 12.0,
+                    fontSize: 10.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
                   ),
@@ -190,7 +196,7 @@ class frcaWidget {
                   minutos,
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 30.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -203,21 +209,23 @@ class frcaWidget {
         ),
         // SEGUNDOS
         Container(
-          width: 70.0,
-          height: 70.0,
+          width: 60.0,
+          height: 60.0,
           decoration: BoxDecoration(
             color: ColorsUtils.principalColor,
-            borderRadius: BorderRadius.circular(10.0),
+            borderRadius: BorderRadius.circular(5.0),
           ),
           child: Padding(
             padding: const EdgeInsets.all(5.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
                   "Segundos",
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 12.0,
+                    fontSize: 10.0,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Roboto',
                   ),
@@ -226,7 +234,7 @@ class frcaWidget {
                   segundos,
                   style: TextStyle(
                     color: ColorsUtils.blancoColor,
-                    fontSize: 30.0,
+                    fontSize: 20.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -298,8 +306,8 @@ class frcaWidget {
     );
   }
 
-  static frca_buscador(
-      Widget widgets, Function fns2, String texto, context, bool iconLeft) {
+  static frca_buscador(Widget widgets, Function fns2, String texto, context,
+      bool iconLeft, bool iconRight) {
     String textBusca = "";
 
     return Container(
@@ -316,10 +324,10 @@ class frcaWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(
+        padding: EdgeInsets.only(
           top: 0,
           bottom: 0,
-          left: 25,
+          left: iconRight ? 0 : 25,
           right: 0,
         ),
         child: Row(
@@ -438,7 +446,7 @@ class frcaWidget {
                     },
                     child: CachedNetworkImage(
                       imageUrl:
-                          "${MainUtils.urlHostAssets}/images/users/user_$idUser.png",
+                          "${MainUtils.urlHostAssets}/images/usuarios/user_$idUser.png",
                       imageBuilder: (context, imageProvider) => Container(
                         height: 40,
                         width: 40,
@@ -897,14 +905,14 @@ class frcaWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(
-            Icons.info_outline,
-            size: 190,
+            Icons.nearby_error,
+            size: 130,
             color: ColorsUtils.principalColor,
           ),
           SizedBox(height: 8),
           Text(
             "No hay datos para mostrar",
-            style: TextStyle(color: ColorsUtils.negroColor, fontSize: 14),
+            style: TextStyle(color: ColorsUtils.blancoColor, fontSize: 14),
           ),
         ],
       ),

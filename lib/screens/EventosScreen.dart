@@ -40,6 +40,9 @@ class _EventosScreenState extends State<EventosScreen> {
   int _num = 0;
   bool is_Login = false;
   int idIglesia = 0;
+  double altoContenido = 280.0;
+  double altoEventos = 40.0;
+  bool hayEventos = false;
 
   @override
   void initState() {
@@ -49,7 +52,6 @@ class _EventosScreenState extends State<EventosScreen> {
 
     initEventosIsLogin();
     listarIglesiasCerca();
-    listarEventosCategoriasTodos();
   }
 
   void initEventosIsLogin() {
@@ -57,13 +59,25 @@ class _EventosScreenState extends State<EventosScreen> {
       idIglesia = int.parse(localStorage.getItem('miIglesia').toString());
       listarEventosIglesia(idIglesia);
       listarEventosByIdUser(idUser);
+      listarEventosCategoriasTodosIglesia(idIglesia);
     } else {
       listarEventosTodos();
+      listarEventosCategoriasTodos();
     }
   }
 
   void listarEventosCategoriasTodos() {
     EventosApiClient().getEventosCategorias().then((categorias) {
+      setState(() {
+        _categocategoriasListrias = categorias;
+      });
+    });
+  }
+
+  void listarEventosCategoriasTodosIglesia(int idIglesia) {
+    EventosApiClient()
+        .getEventosCategoriasIglesia(idIglesia)
+        .then((categorias) {
       setState(() {
         _categocategoriasListrias = categorias;
       });
@@ -104,7 +118,12 @@ class _EventosScreenState extends State<EventosScreen> {
     });
 
     if (num == 0) {
-      listarEventosTodos();
+      if (is_Login) {
+        idIglesia = int.parse(localStorage.getItem('miIglesia').toString());
+        listarEventosIglesia(idIglesia);
+      } else {
+        listarEventosTodos();
+      }
       setState(() {
         _num = num;
       });
@@ -154,6 +173,9 @@ class _EventosScreenState extends State<EventosScreen> {
         .then((iglesias) {
       setState(() {
         churches = iglesias;
+        altoContenido = iglesias.first.eventosIglesia!.length > 0 ? 345 : 280;
+        altoEventos = iglesias.first.eventosIglesia!.length > 0 ? 100 : 40;
+        hayEventos = iglesias.first.eventosIglesia!.length > 0 ? true : false;
         _loadingIglesias = false;
       });
     });
@@ -177,8 +199,8 @@ class _EventosScreenState extends State<EventosScreen> {
             top: 55,
             left: 15,
             right: 15,
-            child: frcaWidget.frca_buscador(
-                _MiPopover(), _searchEvento, "Buscar Evento", context, false),
+            child: frcaWidget.frca_buscador(_MiPopover(), _searchEvento,
+                "Buscar Evento", context, false, false),
           ),
           // LISTA DE CATEGORIAS
           Positioned(
@@ -193,7 +215,7 @@ class _EventosScreenState extends State<EventosScreen> {
             top: 160,
             left: 10,
             right: 10,
-            bottom: 355,
+            bottom: altoContenido,
             child: _loadingEventos
                 ? frcaWidget.frca_loading_simple()
                 : eventosList.isNotEmpty
@@ -285,9 +307,9 @@ class _EventosScreenState extends State<EventosScreen> {
                         : frcaWidget.frca_not_lista_txt("No hay eventos cerca")
                     : _loadingIglesias // AQUI ES CUANDO NO ESTO LOGUEADO
                         ? frcaWidget.frca_loading_simple()
-                        : churches.isNotEmpty
+                        : hayEventos
                             ? SizedBox(
-                                height: 110,
+                                height: altoEventos,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   children: [
@@ -311,9 +333,7 @@ class _EventosScreenState extends State<EventosScreen> {
                                                 "${MainUtils.urlHostAssetsImagen}/${evento.imagen!}",
                                             controller: PageController(),
                                           ),
-                                      ] else
-                                        frcaWidget.frca_not_lista_txt(
-                                            "No hay eventos cerca"),
+                                      ]
                                   ],
                                 ),
                               )
@@ -341,6 +361,7 @@ class _EventosScreenState extends State<EventosScreen> {
                                     latitud: church.latitud!,
                                     longitud: church.longitud!,
                                     telefono: church.telefono!,
+                                    church: church,
                                   ),
                               ],
                             ),

@@ -129,22 +129,34 @@ class EventoItem {
 class Evento {
   final String idEvento;
   final String titulo;
+  final String descripcion;
+  final String etiqueta;
+  final String descripcionCorta;
   final bool tieneAsientos;
   final bool activo;
+  final String imagen;
 
   Evento({
     required this.idEvento,
     required this.titulo,
+    required this.descripcion,
+    required this.etiqueta,
+    required this.descripcionCorta,
     required this.tieneAsientos,
     required this.activo,
+    required this.imagen,
   });
 
   factory Evento.fromJson(Map<String, dynamic> json) {
     return Evento(
       idEvento: json['idEvento'].toString() ?? "0",
       titulo: json['titulo'] ?? '',
+      descripcion: json['descripcion'] ?? '',
+      etiqueta: json['etiqueta'] ?? '',
+      descripcionCorta: json['descripcionCorta'] ?? '',
       tieneAsientos: json['seats'] == 1 || json['seats'] == true,
       activo: json['activo'] == 1 || json['activo'] == true,
+      imagen: json['imagen'] ?? '',
     );
   }
 }

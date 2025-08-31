@@ -64,8 +64,8 @@ class MisReservas {
 
 class Miseventos {
   int? idEvento;
-  Null? idOrganizacion;
-  Null? idIglesia;
+  String? idOrganizacion;
+  String? idIglesia;
   String? fecha;
   String? hora;
   String? fechaFin;
@@ -80,9 +80,10 @@ class Miseventos {
   String? etiqueta;
   String? imagen;
   int? portada;
-  Null? distrito;
+  String? distrito;
   int? region;
   int? activo;
+  int? esGratis;
   String? createdAt;
   String? updatedAt;
 
@@ -107,13 +108,14 @@ class Miseventos {
       this.distrito,
       this.region,
       this.activo,
+      this.esGratis,
       this.createdAt,
       this.updatedAt});
 
   Miseventos.fromJson(Map<String, dynamic> json) {
     idEvento = json['idEvento'];
-    idOrganizacion = json['idOrganizacion'];
-    idIglesia = json['idIglesia'];
+    idOrganizacion = json['idOrganizacion'].toString();
+    idIglesia = json['idIglesia'].toString();
     fecha = json['fecha'];
     hora = json['hora'];
     fechaFin = json['fechaFin'];
@@ -131,6 +133,7 @@ class Miseventos {
     distrito = json['distrito'];
     region = json['region'];
     activo = json['activo'];
+    esGratis = json['esGratis'];
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }
@@ -157,6 +160,7 @@ class Miseventos {
     data['distrito'] = this.distrito;
     data['region'] = this.region;
     data['activo'] = this.activo;
+    data['esGratis'] = this.esGratis;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;

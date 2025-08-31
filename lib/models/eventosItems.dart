@@ -43,6 +43,8 @@ class EventosItems {
 
 class Evento {
   String? idEvento;
+  String? idOrganizacion;
+  String? idIglesia;
   String? fecha;
   String? hora;
   String? fechaFin;
@@ -52,6 +54,7 @@ class Evento {
   String? direccion;
   String? descripcionCorta;
   String? descripcion;
+  String? infoExtra;
   String? seats;
   String? tipo;
   String? etiqueta;
@@ -59,12 +62,15 @@ class Evento {
   String? portada;
   String? distrito;
   String? region;
+  String? esGratis;
   String? activo;
   String? createdAt;
   String? updatedAt;
 
   Evento(
       {this.idEvento,
+      this.idOrganizacion,
+      this.idIglesia,
       this.fecha,
       this.hora,
       this.fechaFin,
@@ -74,6 +80,7 @@ class Evento {
       this.direccion,
       this.descripcionCorta,
       this.descripcion,
+      this.infoExtra,
       this.seats,
       this.tipo,
       this.etiqueta,
@@ -81,12 +88,15 @@ class Evento {
       this.portada,
       this.distrito,
       this.region,
+      this.esGratis,
       this.activo,
       this.createdAt,
       this.updatedAt});
 
   Evento.fromJson(Map<String, dynamic> json) {
     idEvento = json['idEvento'].toString();
+    idOrganizacion = json['idOrganizacion'].toString();
+    idIglesia = json['idIglesia'].toString();
     fecha = json['fecha'];
     hora = json['hora'];
     fechaFin = json['fechaFin'];
@@ -96,6 +106,7 @@ class Evento {
     direccion = json['direccion'];
     descripcionCorta = json['descripcionCorta'];
     descripcion = json['descripcion'];
+    infoExtra = json['infoExtra'];
     seats = json['seats'].toString();
     tipo = json['tipo'].toString();
     etiqueta = json['etiqueta'].toString();
@@ -104,6 +115,7 @@ class Evento {
     distrito = json['distrito'].toString();
     region = json['region'].toString();
     activo = json['activo'].toString();
+    esGratis = json['esGratis'].toString();
     createdAt = json['created_at'].toString();
     updatedAt = json['updated_at'].toString();
   }
@@ -111,6 +123,8 @@ class Evento {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['idEvento'] = this.idEvento;
+    data['idOrganizacion'] = this.idOrganizacion;
+    data['idIglesia'] = this.idIglesia;
     data['fecha'] = this.fecha;
     data['hora'] = this.hora;
     data['fechaFin'] = this.fechaFin;
@@ -120,6 +134,7 @@ class Evento {
     data['direccion'] = this.direccion;
     data['descripcionCorta'] = this.descripcionCorta;
     data['descripcion'] = this.descripcion;
+    data['infoExtra'] = this.infoExtra;
     data['seats'] = this.seats;
     data['tipo'] = this.tipo;
     data['etiqueta'] = this.etiqueta;
@@ -127,11 +142,14 @@ class Evento {
     data['portada'] = this.portada;
     data['distrito'] = this.distrito;
     data['region'] = this.region;
+    data['esGratis'] = this.esGratis;
     data['activo'] = this.activo;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
     return data;
   }
+
+  copyWith({required bool activo}) {}
 }
 
 class Items {

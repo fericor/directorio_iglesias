@@ -1,6 +1,13 @@
+import 'dart:math';
+import 'dart:async';
+import 'dart:io' show Platform;
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conexion_mas/controllers/iglesiasApiClient.dart';
+import 'package:conexion_mas/helper/snackbar.dart';
 import 'package:conexion_mas/models/iglesias.dart';
+import 'package:conexion_mas/screens/infoPastor.dart';
+import 'package:conexion_mas/screens/perfilIglesia.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/utils/widgets.dart';
@@ -9,7 +16,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:localstorage/localstorage.dart';
-import 'dart:io' show Platform;
 
 class ChurchMapScreen extends StatefulWidget {
   const ChurchMapScreen({super.key});
@@ -32,12 +38,33 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
   LatLng startPoint = LatLng(0.0, 0.0);
   bool _loading = true;
   bool _loadingIglesias = true;
+  Timer? _searchTimer;
+  bool _isSearching = false;
+  double _previousZoom = 18.0;
 
   @override
   void initState() {
     super.initState();
 
+    _mapController.mapEventStream.listen((MapEvent mapEvent) {
+      _handleMapEvent(mapEvent);
+    });
+
     listarIglesiasCerca();
+  }
+
+  void _zoomIn() {
+    final newZoom = _mapController.camera.zoom + 1;
+    _mapController.move(_mapController.camera.center, newZoom);
+    _updateRadiusFromZoom(newZoom);
+    _scheduleChurchSearch();
+  }
+
+  void _zoomOut() {
+    final newZoom = _mapController.camera.zoom - 1;
+    _mapController.move(_mapController.camera.center, newZoom);
+    _updateRadiusFromZoom(newZoom);
+    _scheduleChurchSearch();
   }
 
   Future<void> listarIglesiasTodos() async {
@@ -89,36 +116,35 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
       distancia,
     )
         .then((iglesias) {
-      setState(() {
-        churches = iglesias;
-        churchesSearch = iglesias;
+      if (iglesias.isEmpty) {
+        setState(() {
+          _loading = false;
+          _loadingIglesias = false;
+        });
+      } else {
+        setState(() {
+          churches = iglesias;
+          churchesSearch = iglesias;
 
-        churches.add(Iglesias(
-          idIglesia: 0,
-          titulo: 'MiUbicación',
-          descripcion: 'Mi Ubicación',
-          direccion: 'Mi Ubicación',
-          telefono: '0',
-          web: 'https://vallmarketing.es',
-          latitud: miLatitud,
-          longitud: miLongitud,
-        ));
+          churches.add(Iglesias(
+            idIglesia: 0,
+            titulo: 'MiUbicación',
+            descripcion: 'Mi Ubicación',
+            direccion: 'Mi Ubicación',
+            telefono: '0',
+            web: 'https://vallmarketing.es',
+            latitud: miLatitud,
+            longitud: miLongitud,
+          ));
 
-        _loading = false;
-        _loadingIglesias = false;
-      });
+          _loading = false;
+          _loadingIglesias = false;
+        });
+      }
     });
-  }
-
-  void cambioDistancia(double distance) {
-    setState(() {
-      distancia = distance.toString();
-    });
-    listarIglesiasCerca();
   }
 
   void _showChurchDetails(Iglesias church) {
-    // _mapController.move(LatLng(church.latitud!, church.latitud!), 15.0);
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -150,7 +176,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                     placeholder: (context, url) =>
                         Center(child: CircularProgressIndicator()),
                     errorWidget: (context, url, error) => Image.network(
-                      "${MainUtils.urlHostAssets}/images/iglesias/iglesia_0.jpg",
+                      "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
                       fit: BoxFit.cover,
                       width: double.infinity,
                     ),
@@ -161,11 +187,72 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    /// BOTON 0
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ChurchProfileScreen(church: church),
+                            ));
+                      },
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: ColorsUtils.principalColor,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.church,
+                                color: ColorsUtils.blancoColor,
+                                size: 30,
+                              ),
+                              SizedBox(height: 4),
+                              Text(
+                                'Iglesia',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: ColorsUtils.blancoColor),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+
                     /// BOTON 1
                     GestureDetector(
                       onTap: () {
-                        MainUtils().launchInBrowser(Uri.parse(church.web!));
-                        Navigator.pop(context);
+                        if (church.idPastor != 0) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => UserProfilePage(
+                                idPastor: church.idPastor!,
+                              ),
+                            ),
+                          );
+                        } else {
+                          Navigator.pop(context);
+                          AppSnackbar.show(
+                            context,
+                            message:
+                                'Esta iglesia no tiene un pastor asignado.',
+                            type: SnackbarType.error,
+                          );
+                        }
                       },
                       child: Container(
                         width: 80,
@@ -199,7 +286,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: 20,
+                      width: 10,
                     ),
 
                     /// BOTON 2
@@ -239,7 +326,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                       ),
                     ),
                     SizedBox(
-                      width: 20,
+                      width: 10,
                     ),
 
                     /// BOTON 3
@@ -329,8 +416,6 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
           .where((c) => c.titulo!.toLowerCase().contains(query))
           .toList();
     });
-
-    // _showChurchDetails(church);
   }
 
   Future<Position> _getPosition() async {
@@ -364,7 +449,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
 
   void _radioMapa() {
     setState(() {
-      switch (currentZoom.toInt()) {
+      switch (currentZoom.round()) {
         case 0:
           currentRadius = 26214400;
           distancia = "4100246732.8";
@@ -441,26 +526,78 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
           currentRadius = 100;
           distancia = "0.0597";
           break;
+        default:
+          currentRadius = 100;
+          distancia = "0.0597";
+          break;
       }
     });
   }
 
-  void _zoom_plus() {
-    if (currentZoom < 18) {
-      currentZoom = currentZoom + 1;
-      _radioMapa();
-      listarIglesiasCerca();
-      _mapController.move(currentCenter, currentZoom);
+  void _handleMapEvent(MapEvent mapEvent) {
+    // Verificar si el zoom ha cambiado
+    final currentZoom = _mapController.camera.zoom;
+    if ((currentZoom - _previousZoom).abs() > 0.1) {
+      _previousZoom = currentZoom;
+      _updateRadiusFromZoom(currentZoom);
+      _scheduleChurchSearch();
     }
   }
 
-  void _zoom_minus() {
-    if (currentZoom > 0) {
-      currentZoom = currentZoom - 1;
+  void _updateRadiusFromZoom(double zoom) {
+    // Mapa de zoom a radio en metros
+    final Map<int, double> zoomToRadius = {
+      0: 26214400.0,
+      1: 13107200.0,
+      2: 6553600.0,
+      3: 3276800.0,
+      4: 1638400.0,
+      5: 819200.0,
+      6: 409600.0,
+      7: 204800.0,
+      8: 102400.0,
+      9: 51200.0,
+      10: 25600.0,
+      11: 12800.0,
+      12: 6400.0,
+      13: 3200.0,
+      14: 1600.0,
+      15: 800.0,
+      16: 400.0,
+      17: 200.0,
+      18: 100.0,
+    };
+
+    int roundedZoom = zoom.round();
+    if (roundedZoom < 0) roundedZoom = 0;
+    if (roundedZoom > 18) roundedZoom = 18;
+
+    setState(() {
+      currentZoom = zoom;
+      sliderValue = zoom;
+      currentRadius = zoomToRadius[roundedZoom] ?? 100.0;
       _radioMapa();
-      listarIglesiasCerca();
-      _mapController.move(currentCenter, currentZoom);
+    });
+  }
+
+  void _scheduleChurchSearch() {
+    if (_searchTimer != null) {
+      _searchTimer!.cancel();
     }
+
+    _searchTimer = Timer(Duration(milliseconds: 500), () {
+      if (!_isSearching) {
+        _isSearching = true;
+        listarIglesiasCerca().then((_) {
+          _isSearching = false;
+        });
+      }
+    });
+  }
+
+  String _formatDistance(double meters) {
+    double km = meters / 1000;
+    return '${km.toStringAsFixed(1)}';
   }
 
   @override
@@ -473,20 +610,18 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                 FlutterMap(
                   mapController: _mapController,
                   options: MapOptions(
+                    onMapEvent: _handleMapEvent,
                     initialCenter: currentCenter,
                     initialZoom: currentZoom,
-                    onPositionChanged: (camera, hasGesture) {
-                      currentCenter = camera.center;
-                      currentZoom = camera.zoom;
+                    onMapReady: () {
+                      _updateRadiusFromZoom(currentZoom);
                     },
                   ),
                   children: [
                     TileLayer(
-                      // urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                       urlTemplate:
                           'https://api.mapbox.com/styles/v1/fericor/cm5aqsckv00li01sa3ubd38gn/tiles/256/{z}/{x}/{y}@2x?access_token=pk.eyJ1IjoiZmVyaWNvciIsImEiOiJja3J3ZHpzNnQwZm54Mm5xamo0OHN6bDBhIn0.2EtgIWzOEgy6AKorHcL44w',
                       userAgentPackageName: 'com.fericor.conexionmas',
-                      // Plenty of other options available!
                     ),
                     CircleLayer(
                       circles: [
@@ -559,7 +694,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                   left: 15,
                   right: 15,
                   child: frcaWidget.frca_buscador(popupMenuIglesias(),
-                      _searchChurch, "Buscar Iglesia", context, true),
+                      _searchChurch, "Buscar Iglesia", context, true, true),
                 ),
                 Positioned(
                   bottom: 55,
@@ -634,7 +769,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                                                         errorWidget: (context,
                                                                 url, error) =>
                                                             Image.network(
-                                                          "${MainUtils.urlHostAssets}/images/iglesias/iglesia_0.jpg",
+                                                          "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
                                                           fit: BoxFit.cover,
                                                           width:
                                                               double.infinity,
@@ -712,11 +847,18 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                   top: 120,
                   right: 10,
                   child: frcaWidget.frca_botones_map(
-                      _zoom_plus, _zoom_minus, _getPosition),
+                      _zoomIn, _zoomOut, _getPosition),
                 ),
               ],
             ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchTimer?.cancel();
+    _mapController.dispose();
+    super.dispose();
   }
 
   ////////////////////////////////////
@@ -743,18 +885,16 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                     divisions: 18,
                     label: sliderValue.round().toString(),
                     onChanged: (newValue) {
-                      cambioDistancia(newValue);
                       setState(() {
                         sliderValue = newValue;
                         currentZoom = newValue;
                       });
 
                       _radioMapa();
-                      listarIglesiasCerca();
+                      _scheduleChurchSearch();
                       _mapController.move(currentCenter, currentZoom);
                     },
                   ),
-                  // Text('Distancia: ${distancia}km'),
                 ],
               );
             },

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/controllers/EventoService.dart';
+import 'package:conexion_mas/eventos/EventosListPage.dart';
 import 'package:conexion_mas/pages/main.page.dart';
 import 'package:conexion_mas/screens/NotificacionesScreen.dart';
 import 'package:conexion_mas/screens/cambioPassScreen.dart';
@@ -9,7 +11,9 @@ import 'package:conexion_mas/screens/editarPerfilScreen.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/widgets/butonDeleteAcount.dart';
+import 'package:conexion_mas/widgets/circleAvatarUser.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:localstorage/localstorage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -32,6 +36,8 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
   );
 
   String idUser = "0";
+  String idIglesia = "0";
+  String idOrganizacion = "0";
   String nombre = "";
   String email = "";
   String apiToken = localStorage.getItem('miToken').toString() ?? '0';
@@ -63,13 +69,18 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
       nombre = "${myMap['nombre']} ${myMap['apellidos']}";
       email = myMap['email'];
       idUser = myMap['id'].toString();
+      idIglesia = myMap['idIglesia'].toString();
+      idOrganizacion = myMap['idOrganizacion'].toString();
     });
   }
 
   Future<void> logout() async {
     await initLocalStorage();
 
-    localStorage.setItem('isLogin', 'false');
+    localStorage.removeItem('isLogin');
+    localStorage.removeItem('miIdUser');
+    localStorage.removeItem('miToken');
+    localStorage.removeItem('miIglesia');
   }
 
   @override
@@ -90,12 +101,12 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                     padding: const EdgeInsets.all(20.0),
                     child: Column(
                       children: [
-                        CircleAvatar(
+                        EditableCircleAvatar(
+                          idUser: idUser,
                           radius: 60,
-                          backgroundColor: ColorsUtils.blancoColor,
-                          backgroundImage: NetworkImage(
-                            "${MainUtils.urlHostAssets}/images/users/user_$idUser.png",
-                          ),
+                          onImageSelected: (File imageFile) {
+                            _uploadImageToServer(imageFile);
+                          },
                         ),
                         SizedBox(height: 10),
                         Text(
@@ -117,7 +128,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                     ),
                   ),
                 ),
-                SizedBox(height: 40),
+                SizedBox(height: 10),
                 buildOption(
                   icon: Icons.person,
                   title: 'Editar Perfil',
@@ -146,6 +157,25 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                 ),
                 buildOption(
                   icon: Icons.lock,
+                  title: 'Mis eventos',
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => EventosListPage(
+                                idIglesia: idIglesia,
+                                idOrganizacion: idOrganizacion,
+                                token:
+                                    localStorage.getItem('miToken').toString(),
+                                userId: int.parse(idUser),
+                                userRole: 100,
+                                eventoService: EventoService(),
+                              )),
+                    );
+                  },
+                ),
+                buildOption(
+                  icon: Icons.lock,
                   title: 'Cambiar Contraseña',
                   onTap: () {
                     Navigator.push(
@@ -160,15 +190,8 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                     );*/
                   },
                 ),
-                buildOption(
-                  icon: Icons.settings,
-                  title: 'Configuración',
-                  onTap: () {
-                    // Acción al tocar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Configuración seleccionada')),
-                    );
-                  },
+                SizedBox(
+                  height: 10.0,
                 ),
                 DeleteAccountButton(
                   userId: idUser, // el ID del usuario logueado
@@ -176,7 +199,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                       "${MainUtils.urlHostApi}/usuarios/$idUser?api_token=$apiToken", // endpoint DELETE
                 ),
                 SizedBox(
-                  height: 60.0,
+                  height: 40.0,
                 ),
                 buildOptionSimple(
                   icon: Icons.logout,
@@ -187,10 +210,6 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
                       context,
                       MaterialPageRoute(builder: (context) => MainPageView()),
                     );
-                    // Acción al tocar
-                    /*ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Cerrar Sesión seleccionado')),
-                    );*/
                   },
                 ),
               ],
@@ -228,6 +247,31 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
         ],
       ),
     );
+  }
+
+  // ✅ ESTA FUNCIÓN VA EN EL PADRE
+  Future<void> _uploadImageToServer(File imageFile) async {
+    try {
+      var uri = Uri.parse(
+          '${MainUtils.urlHostApi}/usuarios/upload-profile-image?api_token=$apiToken');
+      var request = http.MultipartRequest('POST', uri);
+
+      request.files.add(await http.MultipartFile.fromPath(
+          'image', imageFile.path,
+          filename: 'user_$idUser.jpg'));
+
+      request.fields['idUser'] = idUser;
+
+      var response = await request.send();
+      var responseData = await response.stream.transform(utf8.decoder).join();
+      var jsonResponse = json.decode(responseData);
+
+      if (response.statusCode == 200 && jsonResponse['success']) {
+        print('Imagen subida: ${jsonResponse['image_url']}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
   }
 
   //////////////////////////////////////////

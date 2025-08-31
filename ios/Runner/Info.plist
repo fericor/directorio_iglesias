@@ -2,35 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<!-- ========== CONFIGURACIÓN COMPLETA NOTIFICACIONES ========== -->
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<false/>
-
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-
-	<key>NSRemoteNotificationPermissionOptions</key>
-	<array>
-		<string>badge</string>
-		<string>sound</string>
-		<string>alert</string>
-	</array>
-
-	<!-- Mensajes de permisos (personaliza según tu app) -->
-	<key>NSUserNotificationsUsageDescription</key>
-	<string>Permite notificaciones para recibir actualizaciones importantes</string>
-
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Necesitamos tu ubicación para mejorar tu experiencia</string>
-
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Necesitamos acceso a tus fotos para compartir contenido</string>
-
-	<key>MinimumOSVersion</key>
-	<string>15.0</string>
-
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
@@ -48,11 +19,13 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>$(FLUTTER_BUILD_NAME)</string>
+	<string>1.0.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.0.1</string>
+	<string>3</string>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>sms</string>
@@ -60,17 +33,18 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>MinimumOSVersion</key>
+	<string>15.0</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Scan your card to add it automatically</string>
-	<key>NSCameraUsageDescription
-	&lt;string&gt;To scan cards&lt;/string&gt;</key>
-	<string>To scan cards</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Necesitamos acceso a tu ubicación para mostrar las iglesias cercanas</string>
+	<string>Permite a Conexion+ acceder a tu cámara para que puedas compartir fotos en los eventos, subir tu foto de perfil o escanear códigos QR para registrarte en actividades.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Conexion+ utiliza tu ubicación en segundo plano para avisarte cuando estés cerca de un evento o iglesia importante. Esto nos permite enviarte recordatorios útiles justo cuando los necesitas. Tu privacidad es primordial; tu ubicación nunca se comparte con otros y solo se usa para este propósito. Puedes gestionar este permiso en Ajustes en cualquier momento.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Necesitamos acceso a tu ubicación para mostrar las iglesias cercanas</string>
+	<string>Conexion+ utiliza tu ubicación para mostrarte eventos de tu iglesia y otras cercanas, y para ayudarte a encontrar la mejor ruta para llegar. Tu privacidad es importante y no compartimos esta información.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>The app needs access to your microphone for meetings.</string>
+	<string>El micrófono es necesario para que puedas participar en las reuniones y transmitir audio en vivo dentro de la app.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Permite a Conexion+ acceder a tu biblioteca de fotos para que puedas compartir imágenes de los eventos o guardar recuerdos.</string>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
 	<key>UIBackgroundModes</key>

@@ -1,5 +1,9 @@
+import 'package:conexion_mas/helper/snackbar.dart';
+import 'package:conexion_mas/pages/main.page.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:localstorage/localstorage.dart';
 
 class DeleteAccountButton extends StatelessWidget {
   final String userId; // El ID del usuario actual
@@ -12,24 +16,38 @@ class DeleteAccountButton extends StatelessWidget {
   });
 
   Future<void> _deleteAccount(BuildContext context) async {
+    await initLocalStorage();
+
     try {
-      final response = await http.delete(Uri.parse('$apiUrl/$userId'));
+      final response = await http.delete(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
         // ✅ Cuenta eliminada correctamente
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Cuenta eliminada correctamente.")),
+          AppSnackbar.show(
+            context,
+            message: 'Cuenta eliminada correctamente.',
+            type: SnackbarType.success,
           );
+
+          localStorage.removeItem('isLogin');
+          localStorage.removeItem('miIdUser');
+          localStorage.removeItem('miToken');
+          localStorage.removeItem('miIglesia');
+
           // Aquí podrías cerrar sesión y redirigir al login
-          Navigator.pushReplacementNamed(context, '/login');
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MainPageView()),
+          );
         }
       } else {
         // ❌ Error en el servidor
         if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text("Error al eliminar cuenta: ${response.body}")),
+          AppSnackbar.show(
+            context,
+            message: "Error al eliminar cuenta: ${response.body}",
+            type: SnackbarType.error,
           );
         }
       }
@@ -73,16 +91,31 @@ class DeleteAccountButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+    return GestureDetector(
+      onTap: () => _confirmDelete(context),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: ColorsUtils.rojoColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              Icon(Icons.delete_forever, color: ColorsUtils.blancoColor),
+              const SizedBox(width: 8),
+              Text(
+                "Eliminar cuenta",
+                style: TextStyle(
+                  color: ColorsUtils.blancoColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      icon: const Icon(Icons.delete_forever),
-      label: const Text("Eliminar cuenta"),
-      onPressed: () => _confirmDelete(context),
     );
   }
 }

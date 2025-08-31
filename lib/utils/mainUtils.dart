@@ -4,11 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class MainUtils {
-  static final urlHostApi = "https://apidirectorioiglesias.vallmarketing.es";
-  static final urlHostAssets =
-      "https://apidirectorioiglesias.vallmarketing.es/assets_app";
-  static final urlHostAssetsImagen =
-      "https://apidirectorioiglesias.vallmarketing.es/imagen";
+  static final urlHostApi = "https://api.conexion-mas.com";
+  static final urlHostAssets = "https://api.conexion-mas.com/assets_app";
+  static final urlHostAssetsImagen = "https://api.conexion-mas.com/imagen";
 
   Future<void> openMap(lat, long) async {
     try {
@@ -20,11 +18,29 @@ class MainUtils {
     }
   }
 
-  Future<void> calTel(telefono) async {
+  Future<void> calTelOld(telefono) async {
+    print(telefono);
     try {
       canLaunchUrl(Uri(scheme: 'tel', path: telefono)).then((bool result) {});
     } catch (e) {
       debugPrint("🚀 catched error~ $e:");
+    }
+  }
+
+  Future<void> calTel(String telefono) async {
+    final Uri uri = Uri(scheme: 'tel', path: telefono);
+
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication, // <- importante
+        );
+      } else {
+        debugPrint("🚨 No se puede lanzar la llamada a $telefono");
+      }
+    } catch (e) {
+      debugPrint("🚀 Error atrapado: $e");
     }
   }
 

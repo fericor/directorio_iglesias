@@ -51,6 +51,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       localStorage.setItem('miIdUser', myMap['idUser'].toString());
       localStorage.setItem('miEmail', myMap['email'].toString());
       localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
+      localStorage.setItem('miOranizacion', myMap['idOrganizacion'].toString());
 
       localStorage.setItem('isLogin', 'true');
       localStorage.setItem('miUser', email);
@@ -68,10 +69,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
-    setState(() {
-      _isLoading = false;
-    });
-
     if (Validator.validateName(_nombreController.text) != null) {
       AppSnackbar.show(
         context,
@@ -127,19 +124,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
               .register(nombre, telefono, email, password, iglesiaId);
           Map myMap = jsonDecode(iTems!);
 
-          Navigator.pop(context);
-
           AppSnackbar.show(
             context,
             message: "Tu cuenta ha sido creada con exito.",
             type: SnackbarType.success,
           );
+
+          Navigator.pop(context);
         }
       } catch (e) {
         setState(() {
           _isLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
+        /*ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               showCloseIcon: true,
               backgroundColor: ColorsUtils.principalColor,
@@ -152,7 +149,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   fontSize: 18,
                 ),
               )),
-        );
+        );*/
       }
     }
   }

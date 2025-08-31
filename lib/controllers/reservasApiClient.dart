@@ -40,10 +40,6 @@ class ReservasApiClient {
         if (idAsiento != null) 'idAsiento': idAsiento,
         'items': items,
       });
-
-      print('$baseUrl/reservas?api_token=$apiToken');
-      print(body);
-
       final response = await http.post(url, headers: headers, body: body);
 
       if (response.statusCode == 201) {

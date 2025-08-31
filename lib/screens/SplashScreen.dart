@@ -90,11 +90,12 @@ class _SplashScreenState extends State<SplashScreen> {
         Map myMap = jsonDecode(iTems!);
 
         if (myMap['res']) {
-          print(1);
           localStorage.setItem('miToken', myMap['token'].toString());
           localStorage.setItem('miIdUser', myMap['idUser'].toString());
           localStorage.setItem('miEmail', myMap['email'].toString());
           localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
+          localStorage.setItem(
+              'miOranizacion', myMap['idOrganizacion'].toString());
 
           localStorage.setItem('isLogin', 'true');
           localStorage.setItem('miUser', email);
@@ -109,7 +110,6 @@ class _SplashScreenState extends State<SplashScreen> {
             myMap['token'].toString(),
           );
         } else {
-          print(2);
           localStorage.removeItem('isLogin');
           localStorage.removeItem('miIdUser');
           localStorage.removeItem('miToken');
@@ -129,7 +129,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   void listarEventoPortada() {
     EventosApiClient().getEventoPortada().then((eventos) {
-      if (eventos.items!.isEmpty) {
+      if (eventos.evento!.isEmpty) {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (context) => MainPageView()),
@@ -255,7 +255,7 @@ class _SplashScreenState extends State<SplashScreen> {
                 Positioned(
                   child: Container(
                     decoration: BoxDecoration(
-                      color: ColorsUtils.principalColor.withOpacity(0.2),
+                      color: ColorsUtils.negroColor.withOpacity(0.5),
                     ),
                   ),
                 ),
@@ -273,11 +273,12 @@ class _SplashScreenState extends State<SplashScreen> {
                     child: Container(
                       decoration: BoxDecoration(
                         color: ColorsUtils.principalColor,
-                        borderRadius: BorderRadius.circular(5),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.only(
                           top: 5.0,
+                          bottom: 5.0,
                           left: 20.0,
                           right: 20.0,
                         ),
@@ -285,7 +286,7 @@ class _SplashScreenState extends State<SplashScreen> {
                           'ENTRAR',
                           style: TextStyle(
                             color: ColorsUtils.blancoColor,
-                            fontSize: 18,
+                            fontSize: 15,
                             fontWeight: FontWeight.normal,
                           ),
                         ),

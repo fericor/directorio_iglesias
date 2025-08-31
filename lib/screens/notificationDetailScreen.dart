@@ -32,7 +32,7 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
   void initState() {
     super.initState();
 
-    _crearListProductos();
+    // _crearListProductos();
     isLogin();
   }
 

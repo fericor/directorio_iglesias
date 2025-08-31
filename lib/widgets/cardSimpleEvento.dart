@@ -90,7 +90,7 @@ class CardSimpleEvento extends StatelessWidget {
                       placeholder: (context, url) =>
                           Center(child: CircularProgressIndicator()),
                       errorWidget: (context, url, error) => Image.network(
-                        "${MainUtils.urlHostAssetsImagen}/iglesias/iglesia_0.jpg",
+                        "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
                         fit: BoxFit.cover,
                         width: double.infinity,
                       ),
