@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/helper/snackbar.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/validatorInputs.dart';
 import 'package:flutter/material.dart';
@@ -67,59 +68,19 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
         Map myMap = jsonDecode(iTems!);
 
         if (myMap["res"] == true) {
-          Navigator.pop(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: const Color(0xFFC6C6C6),
-              showCloseIcon: true,
-              duration: Duration(seconds: 15),
-              content: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.check_circle,
-                    size: 70,
-                    color: Colors.greenAccent,
-                  ),
-                  Expanded(
-                    child: Text(
-                      myMap["message"],
-                      maxLines: 5,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Navigator.pop(context);
+          AppSnackbar.show(
+            context,
+            message: myMap["message"],
+            type: SnackbarType.success,
           );
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            showCloseIcon: true,
-            backgroundColor: Colors.red,
-            content: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(
-                  Icons.error,
-                  size: 70,
-                  color: Colors.white,
-                ),
-                Expanded(
-                  child: Text(
-                    "La contraseña no se ha podido cambiar. Contacta con el administrador.",
-                    maxLines: 5,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 18, color: Colors.white),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        AppSnackbar.show(
+          context,
+          message:
+              "La contraseña no se ha podido cambiar. Contacta con el administrador.",
+          type: SnackbarType.error,
         );
       }
     }
@@ -308,9 +269,9 @@ class _EditarPerfilScreenState extends State<EditarPerfilScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     TextFormField(
-                      readOnly: true,
+                      enabled: false,
                       keyboardType: TextInputType.emailAddress,
                       validator: ValidatorInputs().validateEmail,
                       controller: _emailController,

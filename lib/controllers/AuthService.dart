@@ -93,7 +93,7 @@ class AuthService {
       if (response.statusCode == 200) {
         return response.body;
       } else {
-        return null;
+        return response.body;
       }
     } catch (e) {
       throw Exception('Error logging in: $e');

@@ -1,9 +1,13 @@
 import 'package:conexion_mas/controllers/EventoService.dart';
 import 'package:conexion_mas/models/MisEventos.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
+import 'package:conexion_mas/widgets/EtiquetasInputField.dart';
+import 'package:conexion_mas/widgets/KeyValueInputField.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:localstorage/localstorage.dart';
 
 class CrearEventoPage extends StatefulWidget {
   final int userRole;
@@ -50,6 +54,29 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
   bool _portada = false;
   bool _loading = false;
 
+  String _etiquetasJson = '[]';
+  String _infoExtraJson = '{}';
+
+  Widget _buildInfoExtraField() {
+    return KeyValueInputField(
+      jsonData: _infoExtraJson,
+      onJsonChanged: (nuevoJson) {
+        setState(() => _infoExtraJson = nuevoJson);
+      },
+      labelText: 'Información adicional',
+    );
+  }
+
+  Widget _buildEtiquetasField() {
+    return EtiquetasInputField(
+      etiquetaJson: _etiquetasJson,
+      onEtiquetasChanged: (nuevoJson) {
+        setState(() => _etiquetasJson = nuevoJson);
+      },
+      labelText: 'Etiquetas del evento',
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,7 +109,9 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
                     const SizedBox(height: 20),
                     _buildDateFields(),
                     const SizedBox(height: 20),
-                    _buildAdditionalFields(),
+                    _buildEtiquetasField(),
+                    const SizedBox(height: 20),
+                    _buildInfoExtraField(),
                     const SizedBox(height: 20),
                     _buildPortadaSwitch(),
                     const SizedBox(height: 30),
@@ -162,123 +191,70 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
   }
 
   Widget _buildBasicFields() {
-    return Column(
-      children: [
-        TextFormField(
-          controller: _tituloController,
-          decoration: const InputDecoration(
-            labelText: 'Título*',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _lugarController,
-          decoration: const InputDecoration(
-            labelText: 'Lugar*',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _direccionController,
-          decoration: const InputDecoration(
-            labelText: 'Dirección*',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _descCortaController,
-          decoration: const InputDecoration(
-            labelText: 'Descripción Corta*',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 2,
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _descripcionController,
-          decoration: const InputDecoration(
-            labelText: 'Descripción Completa*',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 4,
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateFields() {
-    return Card(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: ColorsUtils.terceroColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: ColorsUtils.principalColor),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Fechas y Horas',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Fecha Inicio*'),
-                      TextButton(
-                        onPressed: () => _seleccionarFecha(inicio: true),
-                        child: Text(
-                            '${_fecha.day}/${_fecha.month}/${_fecha.year}'),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    controller: _horaController,
-                    decoration: const InputDecoration(
-                      labelText: 'Hora Inicio*',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Requerido' : null,
-                  ),
-                ),
-              ],
+            TextFormField(
+              controller: _tituloController,
+              decoration: const InputDecoration(
+                labelText: 'Título*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Fecha Fin (opcional)'),
-                      TextButton(
-                        onPressed: () => _seleccionarFecha(inicio: false),
-                        child: Text(_fechaFin != null
-                            ? '${_fechaFin!.day}/${_fechaFin!.month}/${_fechaFin!.year}'
-                            : 'Seleccionar'),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    controller: _horaFinController,
-                    decoration: const InputDecoration(
-                      labelText: 'Hora Fin',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
+            TextFormField(
+              controller: _lugarController,
+              decoration: const InputDecoration(
+                labelText: 'Lugar*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _direccionController,
+              decoration: const InputDecoration(
+                labelText: 'Dirección*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _descCortaController,
+              decoration: const InputDecoration(
+                labelText: 'Descripción Corta*',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _descripcionController,
+              decoration: const InputDecoration(
+                labelText: 'Descripción Completa*',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _tipoController,
+              decoration: const InputDecoration(
+                labelText: 'Tipo',
+                border: OutlineInputBorder(),
+              ),
             ),
           ],
         ),
@@ -286,63 +262,80 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
     );
   }
 
-  Widget _buildAdditionalFields() {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: [
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _seatsController,
-            decoration: const InputDecoration(
-              labelText: 'Capacidad',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
+  Widget _buildDateFields() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: ColorsUtils.principalColor),
+      ),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Fechas y Horas',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Fecha Inicio*'),
+                        TextButton(
+                          onPressed: () => _seleccionarFecha(inicio: true),
+                          child: Text(
+                              '${_fecha.day}/${_fecha.month}/${_fecha.year}'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _horaController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hora Inicio*',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Requerido' : null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Fecha Fin (opcional)'),
+                        TextButton(
+                          onPressed: () => _seleccionarFecha(inicio: false),
+                          child: Text(_fechaFin != null
+                              ? '${_fechaFin!.day}/${_fechaFin!.month}/${_fechaFin!.year}'
+                              : 'Seleccionar'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _horaFinController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hora Fin',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _tipoController,
-            decoration: const InputDecoration(
-              labelText: 'Tipo',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _etiquetaController,
-            decoration: const InputDecoration(
-              labelText: 'Etiqueta',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _distritoController,
-            decoration: const InputDecoration(
-              labelText: 'Distrito',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _regionController,
-            decoration: const InputDecoration(
-              labelText: 'Región',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -439,15 +432,14 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
         direccion: _direccionController.text,
         descripcionCorta: _descCortaController.text,
         descripcion: _descripcionController.text,
-        infoExtra: "", // Valor por defecto
+        infoExtra: _infoExtraJson, // Valor por defecto
         seats: _seatsController.text,
         tipo: _tipoController.text,
-        etiqueta: _etiquetaController.text,
+        etiqueta: _etiquetasJson,
         imagen: "",
         portada: _portada ? 1 : 0,
-        distrito:
-            _distritoController.text.isEmpty ? null : _distritoController.text,
-        region: _regionController.text.isEmpty ? null : _regionController.text,
+        distrito: localStorage.getItem('miDistrito'),
+        region: localStorage.getItem('miRegion'),
         esGratis: 0, // Valor por defecto
         activo:
             widget.userRole >= 200 ? 1 : 0, // Solo admins crean eventos activos

@@ -1,0 +1,2 @@
+# BASE DE DATOS
+ALTER TABLE `tdv_actividades` ADD `titulo` VARCHAR(255) NOT NULL AFTER `fechaHora`;

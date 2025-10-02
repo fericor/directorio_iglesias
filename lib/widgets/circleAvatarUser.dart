@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:conexion_mas/screens/profile_screen.dart';
+import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,7 +13,7 @@ class EditableCircleAvatar extends StatefulWidget {
   const EditableCircleAvatar({
     Key? key,
     required this.idUser,
-    this.radius = 60,
+    this.radius = 40,
     this.onImageSelected,
   }) : super(key: key);
 
@@ -29,11 +31,22 @@ class _EditableCircleAvatarState extends State<EditableCircleAvatar> {
       alignment: Alignment.bottomRight,
       children: [
         // CircleAvatar principal
-        CircleAvatar(
-          radius: widget.radius,
-          backgroundColor:
-              Colors.white, // Ajusta según tu ColorsUtils.blancoColor
-          backgroundImage: _getImage(),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => ProfileScreen(
+                        userId: int.parse(widget.idUser),
+                      )),
+            );
+          },
+          child: CircleAvatar(
+            radius: widget.radius,
+            backgroundColor:
+                Colors.white, // Ajusta según tu ColorsUtils.blancoColor
+            backgroundImage: _getImage(),
+          ),
         ),
 
         // Botón de edición
@@ -44,7 +57,8 @@ class _EditableCircleAvatarState extends State<EditableCircleAvatar> {
             width: widget.radius * 0.4,
             height: widget.radius * 0.4,
             decoration: BoxDecoration(
-              color: Colors.blue, // Ajusta según tu ColorsUtils.principalColor
+              color: ColorsUtils
+                  .principalColor, // Ajusta según tu ColorsUtils.principalColor
               shape: BoxShape.circle,
               border: Border.all(color: Colors.white, width: 2),
             ),

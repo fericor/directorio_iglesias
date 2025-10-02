@@ -2,8 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:conexion_mas/controllers/AuthService.dart';
-import 'package:conexion_mas/controllers/EventoService.dart';
-import 'package:conexion_mas/eventos/EventosListPage.dart';
+import 'package:conexion_mas/pages/admin.page.dart';
 import 'package:conexion_mas/pages/main.page.dart';
 import 'package:conexion_mas/screens/NotificacionesScreen.dart';
 import 'package:conexion_mas/screens/cambioPassScreen.dart';
@@ -36,6 +35,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
   );
 
   String idUser = "0";
+  String roleUser = "0";
   String idIglesia = "0";
   String idOrganizacion = "0";
   String nombre = "";
@@ -71,6 +71,7 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
       idUser = myMap['id'].toString();
       idIglesia = myMap['idIglesia'].toString();
       idOrganizacion = myMap['idOrganizacion'].toString();
+      roleUser = myMap['role'].toString();
     });
   }
 
@@ -90,129 +91,128 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
       body: Stack(
         children: [
           Positioned(
-            top: Platform.isAndroid ? 30 : 60,
+            top: 60,
             left: 20,
             right: 20,
-            child: Column(
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      children: [
-                        EditableCircleAvatar(
-                          idUser: idUser,
-                          radius: 60,
-                          onImageSelected: (File imageFile) {
-                            _uploadImageToServer(imageFile);
-                          },
-                        ),
-                        SizedBox(height: 10),
-                        Text(
-                          nombre,
-                          style: TextStyle(
-                            fontSize: 22,
-                            color: ColorsUtils.blancoColor,
-                            fontWeight: FontWeight.bold,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          EditableCircleAvatar(
+                            idUser: idUser,
+                            radius: 65,
+                            onImageSelected: (File imageFile) {
+                              _uploadImageToServer(imageFile);
+                            },
                           ),
-                        ),
-                        Text(
-                          email,
-                          style: TextStyle(
-                            fontSize: 18,
-                            color: ColorsUtils.principalColor,
+                          SizedBox(height: 10),
+                          Text(
+                            nombre,
+                            style: TextStyle(
+                              fontSize: 20,
+                              color: ColorsUtils.blancoColor,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
+                          Text(
+                            email,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: ColorsUtils.principalColor,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(height: 10),
-                buildOption(
-                  icon: Icons.person,
-                  title: 'Editar Perfil',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const EditarPerfilScreen()),
-                    );
-                    // Acción al tocar
-                    /*ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Editar Perfil seleccionado')),
-                    );*/
-                  },
-                ),
-                buildOption(
-                  icon: Icons.notifications,
-                  title: 'Mis notificaciones',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const NotificacionesScreen()),
-                    );
-                  },
-                ),
-                buildOption(
-                  icon: Icons.lock,
-                  title: 'Mis eventos',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EventosListPage(
-                                idIglesia: idIglesia,
-                                idOrganizacion: idOrganizacion,
-                                token:
-                                    localStorage.getItem('miToken').toString(),
-                                userId: int.parse(idUser),
-                                userRole: 100,
-                                eventoService: EventoService(),
-                              )),
-                    );
-                  },
-                ),
-                buildOption(
-                  icon: Icons.lock,
-                  title: 'Cambiar Contraseña',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const CambioContrasenaScreen()),
-                    );
-                    // Acción al tocar
-                    /*ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Cambiar Contraseña seleccionado')),
-                    );*/
-                  },
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                DeleteAccountButton(
-                  userId: idUser, // el ID del usuario logueado
-                  apiUrl:
-                      "${MainUtils.urlHostApi}/usuarios/$idUser?api_token=$apiToken", // endpoint DELETE
-                ),
-                SizedBox(
-                  height: 40.0,
-                ),
-                buildOptionSimple(
-                  icon: Icons.logout,
-                  title: 'Cerrar Sesión',
-                  onTap: () {
-                    logout();
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => MainPageView()),
-                    );
-                  },
-                ),
-              ],
+                  SizedBox(height: 20),
+                  if (roleUser == "100")
+                    buildOption(
+                      icon: Icons.admin_panel_settings,
+                      title: 'Administrar',
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AdminPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  buildOption(
+                    icon: Icons.person,
+                    title: 'Editar Perfil',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EditarPerfilScreen()),
+                      );
+                      // Acción al tocar
+                      /*ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Editar Perfil seleccionado')),
+                      );*/
+                    },
+                  ),
+                  buildOption(
+                    icon: Icons.notifications,
+                    title: 'Mis notificaciones',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const NotificacionesScreen()),
+                      );
+                    },
+                  ),
+                  buildOption(
+                    icon: Icons.lock,
+                    title: 'Cambiar Contraseña',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const CambioContrasenaScreen()),
+                      );
+                      // Acción al tocar
+                      /*ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content: Text('Cambiar Contraseña seleccionado')),
+                      );*/
+                    },
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  DeleteAccountButton(
+                    userId: idUser, // el ID del usuario logueado
+                    apiUrl:
+                        "${MainUtils.urlHostApi}/usuarios/$idUser?api_token=$apiToken", // endpoint DELETE
+                  ),
+                  SizedBox(
+                    height: 40.0,
+                  ),
+                  buildOptionSimple(
+                    icon: Icons.logout,
+                    title: 'Cerrar Sesión',
+                    onTap: () {
+                      logout();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => MainPageView()),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
           Positioned(
@@ -284,7 +284,10 @@ class _PerfilUsuarioScreenState extends State<PerfilUsuarioScreen>
         leading: Icon(icon, color: ColorsUtils.principalColor, size: 28),
         title: Text(
           title,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+          style: TextStyle(
+              fontSize: 18,
+              color: ColorsUtils.blancoColor,
+              fontWeight: FontWeight.w500),
         ),
         trailing: Icon(Icons.arrow_forward_ios,
             size: 16, color: ColorsUtils.blancoColor),

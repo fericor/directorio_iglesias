@@ -65,8 +65,8 @@ class CardMain extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    DetalleEvento(evento: eventoItem, controller: controller)),
+                builder: (context) => DetalleEvento(
+                    index: 0, evento: eventoItem, controller: controller)),
           );
         });
       },
@@ -218,29 +218,43 @@ class CardMain extends StatelessWidget {
                           ),
                         ),
                         // TIPO Y HORA
-                        Row(
+                        Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Icon(Icons.info_outline,
-                                color: ColorsUtils.blancoColor, size: 16.0),
-                            SizedBox(width: 2.0),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.access_time,
+                                    color: ColorsUtils.blancoColor, size: 16.0),
+                                SizedBox(width: 2.0),
+                                Text(
+                                  hora,
+                                  textAlign: TextAlign.start,
+                                  style: TextStyle(
+                                    color: ColorsUtils.blancoColor,
+                                    fontSize: 13.0,
+                                  ),
+                                ),
+                              ],
+                            ),
                             /////////////////////////////
                             Row(
-                              children: etiquetasWidgets,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Icon(Icons.info_outline,
+                                    color: ColorsUtils.blancoColor, size: 16.0),
+                                SizedBox(width: 2.0),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: etiquetasWidgets,
+                                )
+                              ],
                             ),
                             /////////////////////
-                            SizedBox(width: 20.0),
-                            Icon(Icons.access_time,
-                                color: ColorsUtils.blancoColor, size: 16.0),
-                            SizedBox(width: 2.0),
-                            Text(
-                              hora,
-                              style: TextStyle(
-                                color: ColorsUtils.blancoColor,
-                                fontSize: 13.0,
-                              ),
-                            ),
                           ],
                         ),
                       ],

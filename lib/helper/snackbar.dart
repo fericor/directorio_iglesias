@@ -42,7 +42,7 @@ class AppSnackbar {
       SnackBar(
         backgroundColor: backgroundColor,
         showCloseIcon: true,
-        duration: const Duration(seconds: 5),
+        duration: const Duration(seconds: 10),
         content: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

@@ -12,6 +12,8 @@ class Eventos {
   String? tipo;
   String? descripcionCorta;
   String? imagen;
+  String? lugar;
+  String? direccion;
   int? portada;
   int? distrito;
   int? region;
@@ -32,6 +34,8 @@ class Eventos {
     this.tipo,
     this.descripcionCorta,
     this.imagen,
+    this.lugar,
+    this.direccion,
     this.portada,
     this.distrito,
     this.region,
@@ -54,6 +58,8 @@ class Eventos {
       tipo: json['tipo'],
       descripcionCorta: json['descripcionCorta'],
       imagen: json['imagen'],
+      lugar: json['lugar'],
+      direccion: json['direccion'],
       portada: json['portada'],
       distrito: json['distrito'],
       region: json['region'],

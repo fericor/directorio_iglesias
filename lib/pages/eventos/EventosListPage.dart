@@ -1,14 +1,14 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conexion_mas/controllers/EventoService.dart';
 import 'package:conexion_mas/controllers/eventosApiClient.dart';
-import 'package:conexion_mas/eventos/crear_evento_page.dart';
-import 'package:conexion_mas/eventos/editar_evento_page.dart';
+import 'package:conexion_mas/pages/eventos/EventoItemsListPage.dart';
+import 'package:conexion_mas/pages/eventos/Crear_evento_page.dart';
+import 'package:conexion_mas/pages/eventos/Editar_evento_page.dart';
 import 'package:conexion_mas/helper/snackbar.dart';
 import 'package:conexion_mas/models/MisEventos.dart';
 import 'package:conexion_mas/screens/notificationDetailScreen.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
-import 'package:conexion_mas/widgets/detalleEvento.dart';
 import 'package:flutter/material.dart';
 
 class EventosListPage extends StatefulWidget {
@@ -48,19 +48,30 @@ class _EventosListPageState extends State<EventosListPage> {
     try {
       setState(() => _loading = true);
 
-      if (widget.userRole >= 100) {
-        // Usuario con permisos ve todos los eventos
+      if (widget.userRole == 1000) {
+        _eventos = await widget.eventoService.getEventosTodos(widget.token);
+      } else {
         _eventos = await widget.eventoService
             .getEventoByIglesia(widget.idIglesia, widget.token);
-      } else {
-        // Usuario normal solo ve eventos activos
-        // _eventos = await widget.eventoService.getEventosPublicos();
       }
     } catch (e) {
       _mostrarError('Error al cargar eventos: $e');
     } finally {
       setState(() => _loading = false);
     }
+  }
+
+  void _navegarAGestionarItems(MisEventos evento) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EventoItemsListPage(
+          eventoId: evento.idEvento!.toString(),
+          token: widget.token,
+          userRole: widget.userRole,
+        ),
+      ),
+    );
   }
 
   void _mostrarError(String mensaje) {
@@ -209,6 +220,7 @@ class _EventosListPageState extends State<EventosListPage> {
                       return _EventoCard(
                         evento: evento,
                         userRole: widget.userRole,
+                        onItems: () => _navegarAGestionarItems(evento),
                         onEdit: () => _navegarAEditarEvento(evento),
                         onDelete: () => _eliminarEvento(evento.idEvento!),
                         onApprove: evento.activo != 1
@@ -225,6 +237,7 @@ class _EventosListPageState extends State<EventosListPage> {
 class _EventoCard extends StatelessWidget {
   final MisEventos evento;
   final int userRole;
+  final VoidCallback? onItems;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
   final VoidCallback? onApprove;
@@ -232,6 +245,7 @@ class _EventoCard extends StatelessWidget {
   const _EventoCard({
     required this.evento,
     required this.userRole,
+    this.onItems,
     this.onEdit,
     this.onDelete,
     this.onApprove,
@@ -299,7 +313,11 @@ class _EventoCard extends StatelessWidget {
               .then((eventoItem) {
             Navigator.of(context!).push(
               MaterialPageRoute(
-                  builder: (context) => DetalleEventoPush(evento: eventoItem)),
+                builder: (context) => DetalleEventoPush(
+                  evento: eventoItem,
+                  controller: PageController(),
+                ),
+              ),
             );
           });
         },
@@ -313,6 +331,15 @@ class _EventoCard extends StatelessWidget {
       itemBuilder: (context) {
         final items = <PopupMenuItem<String>>[];
 
+        items.add(const PopupMenuItem(
+          value: 'items',
+          child: Row(children: [
+            Icon(Icons.airplane_ticket),
+            SizedBox(width: 8),
+            Text('Gestionar entradas')
+          ]),
+        ));
+
         if (onEdit != null) {
           items.add(const PopupMenuItem(
             value: 'edit',
@@ -324,7 +351,7 @@ class _EventoCard extends StatelessWidget {
           ));
         }
 
-        if (onApprove != null) {
+        /*if (onApprove != null) {
           items.add(const PopupMenuItem(
             value: 'approve',
             child: Row(children: [
@@ -333,7 +360,7 @@ class _EventoCard extends StatelessWidget {
               Text('Aprobar')
             ]),
           ));
-        }
+        }*/
 
         if (onDelete != null) {
           items.add(const PopupMenuItem(
@@ -350,6 +377,9 @@ class _EventoCard extends StatelessWidget {
       },
       onSelected: (value) {
         switch (value) {
+          case 'items':
+            onItems?.call();
+            break;
           case 'edit':
             onEdit?.call();
             break;

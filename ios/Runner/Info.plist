@@ -19,11 +19,11 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0.3</string>
+	<string>1.0.4</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>3</string>
+	<string>4</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
@@ -68,5 +68,25 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Necesitamos guardar imágenes en tu galería para conservar recuerdos y actividades de la iglesia.</string>
+
+    <key>NSLocationAlwaysUsageDescription</key>
+    <string>Permite que Conexion+ acceda a tu ubicación en todo momento para mantenerte informado sobre eventos cristianos, servicios de iglesias cercanas y actividades religiosas relevantes en tu área, incluso cuando la app no esté en uso.</string>
+    
+    <key>NSLocationUsageDescription</key>
+    <string>Conexion+ utiliza tu ubicación para conectarte con iglesias cercanas, eventos cristianos y comunidades de fe. Encuentra servicios religiosos, grupos de estudio bíblico y actividades espirituales en tu localidad.</string>
+    
+    <!-- Para iOS 13+ -->
+    <key>NSLocationTemporaryUsageDescriptionDictionary</key>
+    <dict>
+        <key>Purpose1</key>
+        <string>Necesitamos acceso temporal a tu ubicación precisa para mejores resultados</string>
+    </dict>
+    
+    <!-- Permiso para modo preciso (iOS 14+) -->
+    <key>NSLocationDefaultAccuracyReduced</key>
+    <false/>
 </dict>
 </plist>

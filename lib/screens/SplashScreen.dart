@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conexion_mas/controllers/AuthService.dart';
+import 'package:conexion_mas/controllers/ProfileServide.dart';
 import 'package:conexion_mas/controllers/eventosApiClient.dart';
 import 'package:conexion_mas/controllers/notifications_service.dart';
 import 'package:conexion_mas/controllers/reservasApiClient.dart';
@@ -14,6 +15,7 @@ import 'package:conexion_mas/utils/widgets.dart';
 import 'package:conexion_mas/widgets/detalleEvento.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -27,13 +29,15 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   late EventosItems eventosList;
   bool _loading = true;
-
-  late Timer _timer;
+  Timer? _timer;
 
   String diasTxt = "0";
   String horasTxt = "0";
   String minutosTxt = "0";
   String segundosTxt = "0";
+
+  int _currentPage = 0;
+  PageController _pageController = PageController();
 
   String? _token;
 
@@ -95,7 +99,11 @@ class _SplashScreenState extends State<SplashScreen> {
           localStorage.setItem('miEmail', myMap['email'].toString());
           localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
           localStorage.setItem(
-              'miOranizacion', myMap['idOrganizacion'].toString());
+              'miOrganizacion', myMap['idOrganizacion'].toString());
+
+          localStorage.setItem('miDistrito', myMap['distrito'].toString());
+          localStorage.setItem('miRegion', myMap['region'].toString());
+          localStorage.setItem('miRole', myMap['role'].toString());
 
           localStorage.setItem('isLogin', 'true');
           localStorage.setItem('miUser', email);
@@ -103,6 +111,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
           // Setear el token en el ApiService
           ReservasApiClient.setApiToken(myMap['token'].toString());
+          ProfileService.setAuthToken(myMap['token'].toString());
 
           updateTokenNotificaciones(
             myMap['idUser'].toString(),
@@ -139,10 +148,21 @@ class _SplashScreenState extends State<SplashScreen> {
           eventosList = eventos;
         });
 
-        _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-          calcularCuantoFalta(
-              "${eventosList.evento![0].fecha} ${eventosList.evento![0].hora}");
-        });
+        // Inicializar el timer para la primera página
+        _iniciarTimerParaPagina(_currentPage);
+      }
+    });
+  }
+
+  void _iniciarTimerParaPagina(int pagina) {
+    // Cancelar timer existente si hay uno
+    _timer?.cancel();
+
+    // Crear nuevo timer para la página actual
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (eventosList != null && eventosList!.evento!.isNotEmpty) {
+        calcularCuantoFalta(
+            "${eventosList!.evento![pagina].fecha} ${eventosList!.evento![pagina].hora}");
       }
     });
   }
@@ -161,8 +181,13 @@ class _SplashScreenState extends State<SplashScreen> {
     int segundos = diferencia.inSeconds % 60;
 
     if (dias < 0) {
-      _timer.cancel();
+      _timer!.cancel();
       setState(() {
+        diasTxt = "0";
+        horasTxt = "0";
+        minutosTxt = "0";
+        segundosTxt = "0";
+
         _loading = false;
       });
     } else {
@@ -202,18 +227,205 @@ class _SplashScreenState extends State<SplashScreen> {
     }
 
     Position position = await Geolocator.getCurrentPosition();
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+      position.latitude,
+      position.longitude,
+    );
 
     localStorage.setItem('mi_latitud', position.latitude.toString());
     localStorage.setItem('mi_longitud', position.longitude.toString());
     // localStorage.setItem('isLogin', 'false');
+
+    print("País: ${placemarks.first.country}");
 
     return position;
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel(); // Usamos ?. porque _timer puede ser null
+    _pageController.dispose();
     super.dispose();
+  }
+
+  Widget _buildEventoPage(int index) {
+    final evento = eventosList.evento![index];
+    _iniciarTimerParaPagina(index);
+
+    return Stack(
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: CachedNetworkImage(
+            imageUrl:
+                "${MainUtils.urlHostAssetsImagen}/${eventosList.evento![index].imagen}",
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: imageProvider,
+                  fit: BoxFit.cover,
+                  colorFilter: ColorFilter.mode(
+                    ColorsUtils.principalColor,
+                    BlendMode.colorBurn,
+                  ),
+                ),
+              ),
+            ),
+            placeholder: (context, url) => SizedBox(
+                width: 50, height: 50, child: const LinearProgressIndicator()),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
+          ),
+        ),
+        // CAPA TRANPARENTE
+        Positioned(
+          child: Container(
+            decoration: BoxDecoration(
+              color: ColorsUtils.negroColor.withOpacity(0.5),
+            ),
+          ),
+        ),
+        // BOTON SALTAR
+        Positioned(
+          top: 60,
+          right: 10,
+          child: TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => MainPageView()),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorsUtils.principalColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 5.0,
+                  bottom: 5.0,
+                  left: 20.0,
+                  right: 20.0,
+                ),
+                child: Text(
+                  'ENTRAR',
+                  style: TextStyle(
+                    color: ColorsUtils.blancoColor,
+                    fontSize: 15,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        // TITULO DEL EVENTO
+        Positioned(
+          top: 300,
+          left: 20,
+          right: 40,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  eventosList.evento![index].titulo ?? "Titulo del evento",
+                  style: TextStyle(
+                    height: 1.1,
+                    color: ColorsUtils.blancoColor,
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(
+                  height: 10.0,
+                ),
+                Text(
+                  eventosList.evento![index].descripcionCorta ??
+                      "Descripcion corta del evento",
+                  style: TextStyle(
+                    color: ColorsUtils.blancoColor,
+                    height: 1.1,
+                    fontSize: 16,
+                  ),
+                ),
+                frcaWidget.frca_separacion(),
+              ],
+            ),
+          ),
+        ),
+        // FECHA Y HORA CUENTA ATRAS
+        Positioned(
+          bottom: 110,
+          left: 20,
+          right: 20,
+          child: frcaWidget.frca_cuenta_atras(
+              diasTxt, horasTxt, minutosTxt, segundosTxt),
+        ),
+        Positioned(
+          bottom: 30,
+          left: 40,
+          right: 40,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DetalleEvento(
+                          index: index,
+                          evento: eventosList,
+                          controller: PageController(),
+                        )),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: ColorsUtils.principalColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Center(
+                  child: Text(
+                    "Mas información",
+                    style: TextStyle(
+                        color: ColorsUtils.blancoColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Roboto'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _buildPageIndicators() {
+    List<Widget> indicators = [];
+    for (int i = 0; i < eventosList.evento!.length; i++) {
+      indicators.add(
+        Container(
+          width: 8.0,
+          height: 8.0,
+          margin: EdgeInsets.symmetric(horizontal: 4.0),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: _currentPage == i
+                ? ColorsUtils.principalColor
+                : ColorsUtils.blancoColor.withOpacity(0.5),
+          ),
+        ),
+      );
+    }
+    return indicators;
   }
 
   @override
@@ -223,158 +435,32 @@ class _SplashScreenState extends State<SplashScreen> {
           ? frcaWidget.frca_loading_container()
           : Stack(
               children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: CachedNetworkImage(
-                    imageUrl:
-                        "${MainUtils.urlHostAssetsImagen}/${eventosList.evento![0].imagen}",
-                    imageBuilder: (context, imageProvider) => Container(
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: imageProvider,
-                          fit: BoxFit.cover,
-                          colorFilter: ColorFilter.mode(
-                            ColorsUtils.principalColor,
-                            BlendMode.colorBurn,
-                          ),
-                        ),
-                      ),
-                    ),
-                    placeholder: (context, url) => SizedBox(
-                        width: 50,
-                        height: 50,
-                        child: const LinearProgressIndicator()),
-                    errorWidget: (context, url, error) =>
-                        const Icon(Icons.error),
-                  ),
+                // CARRUSEL DE EVENTOS
+                PageView.builder(
+                  controller: _pageController,
+                  itemCount: eventosList.evento!.length,
+                  onPageChanged: (int page) {
+                    setState(() {
+                      _currentPage = page;
+                    });
+                    // Actualizar el contador para el nuevo evento
+                  },
+                  itemBuilder: (context, index) {
+                    return _buildEventoPage(index);
+                  },
                 ),
-                // CAPA TRANPARENTE
-                Positioned(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: ColorsUtils.negroColor.withOpacity(0.5),
+
+                // INDICADORES DE PAGINACIÓN
+                if (eventosList.evento!.length > 1)
+                  Positioned(
+                    bottom: 200,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: _buildPageIndicators(),
                     ),
                   ),
-                ),
-                // BOTON SALTAR
-                Positioned(
-                  top: 60,
-                  right: 10,
-                  child: TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MainPageView()),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ColorsUtils.principalColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          top: 5.0,
-                          bottom: 5.0,
-                          left: 20.0,
-                          right: 20.0,
-                        ),
-                        child: Text(
-                          'ENTRAR',
-                          style: TextStyle(
-                            color: ColorsUtils.blancoColor,
-                            fontSize: 15,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                // TITULO DEL EVENTO
-                Positioned(
-                  top: 300,
-                  left: 20,
-                  right: 40,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 15.0, right: 15.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          eventosList.evento![0].titulo ?? "Titulo del evento",
-                          style: TextStyle(
-                            height: 1.1,
-                            color: ColorsUtils.blancoColor,
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Text(
-                          eventosList.evento![0].descripcionCorta ??
-                              "Descripcion corta del evento",
-                          style: TextStyle(
-                            color: ColorsUtils.blancoColor,
-                            height: 1.1,
-                            fontSize: 16,
-                          ),
-                        ),
-                        frcaWidget.frca_separacion(),
-                      ],
-                    ),
-                  ),
-                ),
-                // FECHA Y HORA CUENTA ATRAS
-                Positioned(
-                  bottom: 110,
-                  left: 20,
-                  right: 20,
-                  child: frcaWidget.frca_cuenta_atras(
-                      diasTxt, horasTxt, minutosTxt, segundosTxt),
-                ),
-                Positioned(
-                  bottom: 30,
-                  left: 40,
-                  right: 40,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DetalleEvento(
-                                  evento: eventosList,
-                                  controller: PageController(),
-                                )),
-                      );
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: ColorsUtils.principalColor,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Center(
-                          child: Text(
-                            "Mas información",
-                            style: TextStyle(
-                                color: ColorsUtils.blancoColor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Roboto'),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
               ],
             ),
     );

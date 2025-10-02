@@ -7,6 +7,8 @@ import 'package:conexion_mas/models/iglesias.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/widgets/FavoritoButton.dart';
+import 'package:conexion_mas/widgets/comment_section.dart';
+import 'package:conexion_mas/widgets/follow_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:http/http.dart' as http;
@@ -109,29 +111,42 @@ class _ChurchProfileScreenState extends State<ChurchProfileScreen> {
               background: _buildImageCarousel(),
             ),
             actions: [
-              IconButton(
-                icon: Icon(Icons.share, color: ColorsUtils.blancoColor),
-                onPressed: _shareChurch,
+              Container(
+                width: 35,
+                height: 35,
+                decoration: BoxDecoration(
+                  color: ColorsUtils.principalColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.share, color: ColorsUtils.blancoColor),
+                  iconSize: 20.0,
+                  onPressed: _shareChurch,
+                ),
               ),
-              is_Login
-                  ? FavoritoButton(
-                      idUsuario: idUser,
-                      idIglesia: widget.church.idIglesia!.toString(),
-                      token: token,
-                      inicial: favoritos.contains(widget.church.idIglesia),
-                    )
-                  : IconButton(
-                      icon: Icon(Icons.favorite_border,
-                          color: ColorsUtils.blancoColor),
-                      onPressed: _toggleFavorite,
-                    )
+              SizedBox(width: 3),
+              if (is_Login)
+                Container(
+                  width: 35,
+                  height: 35,
+                  decoration: BoxDecoration(
+                    color: ColorsUtils.principalColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: FollowButton(
+                    idIglesia: widget.church.idIglesia!,
+                    idEvento: 0,
+                    tipo: 'iglesia',
+                  ),
+                ),
+              SizedBox(width: 3),
             ],
           ),
 
           // Contenido principal
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -167,6 +182,14 @@ class _ChurchProfileScreenState extends State<ChurchProfileScreen> {
 
                   // Horarios de servicios
                   _buildServiceTimes(),
+
+                  // Nueva sección de comentarios
+                  SizedBox(height: 24),
+                  CommentSection(
+                    idIglesia: widget.church.idIglesia!,
+                    idEvento: 0,
+                    tipo: 'iglesia',
+                  ),
 
                   const SizedBox(height: 112),
                 ],

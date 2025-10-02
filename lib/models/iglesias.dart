@@ -1,5 +1,6 @@
 class Iglesias {
   int? idIglesia;
+  int? idUsuario;
   int? idPastor;
   int? idOrganizacion;
   String? titulo;
@@ -30,6 +31,7 @@ class Iglesias {
 
   Iglesias(
       {this.idIglesia,
+      this.idUsuario,
       this.idPastor,
       this.idOrganizacion,
       this.titulo,
@@ -60,6 +62,7 @@ class Iglesias {
 
   Iglesias.fromJson(Map<String, dynamic> json) {
     idIglesia = json['idIglesia'];
+    idUsuario = json['idUsuario'];
     idPastor = json['idPastor'];
     idOrganizacion = json['idOrganizacion'];
     titulo = json['titulo'];
@@ -107,6 +110,7 @@ class Iglesias {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['idIglesia'] = this.idIglesia;
+    data['idUsuario'] = this.idUsuario;
     data['idPastor'] = this.idPastor;
     data['idOrganizacion'] = this.idOrganizacion;
     data['titulo'] = this.titulo;

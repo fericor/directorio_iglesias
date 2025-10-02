@@ -65,9 +65,16 @@ class DeleteAccountButton extends StatelessWidget {
       context: context,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text("Eliminar cuenta"),
-          content: const Text(
-              "¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer."),
+          title: Text(
+            "Eliminar cuenta",
+            style: TextStyle(color: ColorsUtils.principalColor),
+          ),
+          content: Text(
+            "¿Seguro que deseas eliminar tu cuenta? Esta acción no se puede deshacer.",
+            style: TextStyle(
+              color: ColorsUtils.blancoColor,
+            ),
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -75,13 +82,16 @@ class DeleteAccountButton extends StatelessWidget {
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: ColorsUtils.rojoColor,
               ),
               onPressed: () {
                 Navigator.of(ctx).pop();
                 _deleteAccount(context);
               },
-              child: const Text("Eliminar"),
+              child: Text(
+                "Eliminar",
+                style: TextStyle(color: ColorsUtils.blancoColor),
+              ),
             ),
           ],
         );
@@ -97,7 +107,7 @@ class DeleteAccountButton extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           color: ColorsUtils.rojoColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),

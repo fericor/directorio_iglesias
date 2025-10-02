@@ -1,20 +1,27 @@
+import 'dart:convert';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conexion_mas/controllers/reservasApiClient.dart';
 import 'package:conexion_mas/controllers/stripeApiClient.dart';
 import 'package:conexion_mas/helper/snackbar.dart';
 import 'package:conexion_mas/models/eventosItems.dart';
 import 'package:conexion_mas/models/reservas.dart';
+import 'package:conexion_mas/screens/LoginScreen.dart';
 import 'package:conexion_mas/screens/MisReservasScreen.dart';
 import 'package:conexion_mas/screens/qrEventoDetalleScreen.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/widgets/infoEventos.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:localstorage/localstorage.dart';
 
 class DetalleEventoPush extends StatefulWidget {
+  PageController controller;
   EventosItems evento;
-  DetalleEventoPush({super.key, required this.evento});
+  DetalleEventoPush(
+      {super.key, required this.controller, required this.evento});
 
   @override
   State<DetalleEventoPush> createState() => _DetalleEventoState();
@@ -32,7 +39,7 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
   void initState() {
     super.initState();
 
-    // _crearListProductos();
+    _crearListProductos();
     isLogin();
   }
 
@@ -91,9 +98,9 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
   void _crearListProductos() {
     for (int i = 0; i < widget.evento.items!.length; i++) {
       Map<String, dynamic> item = {
-        'id': widget.evento.items![i].id,
-        'nombre': widget.evento.items![i].titulo,
-        'precio': widget.evento.items![i].precio,
+        'id': widget.evento.items![i].id ?? 0,
+        'nombre': widget.evento.items![i].titulo ?? "",
+        'precio': widget.evento.items![i].precio ?? "",
         'cantidad': 0,
         'subTotal': 0,
       };
@@ -171,6 +178,25 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
     });
   }
 
+  late List<Widget> etiquetasWidgets =
+      (jsonDecode(widget.evento.evento![0].etiqueta!) as List<dynamic>)
+          .map<String>(
+              (e) => e.toString()) // Convertimos cada elemento a String
+          .map<Widget>((txt) => Row(
+                children: [
+                  Text(
+                    txt,
+                    style: TextStyle(
+                      color: ColorsUtils.principalColor,
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 5),
+                ],
+              ))
+          .toList();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -230,7 +256,9 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    widget.evento.evento![0].titulo!,
+                    widget.evento.evento!.length > 0
+                        ? widget.evento.evento![0].titulo!
+                        : "No tiene titulo",
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -240,9 +268,28 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
                   ),
                 ),
               ),
-              background: Image.network(
-                "${MainUtils.urlHostAssetsImagen}/${widget.evento.evento![0].imagen!}", // URL de la imagen
-                fit: BoxFit.fitWidth, // Ajusta la imagen al espacio disponible
+              background: CachedNetworkImage(
+                fit: BoxFit.cover,
+                imageUrl: widget.evento.evento!.length > 0
+                    ? "${MainUtils.urlHostAssetsImagen}/${widget.evento.evento![0].imagen!}"
+                    : "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
+                imageBuilder: (context, imageProvider) => Container(
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                placeholder: (context, url) => SizedBox(
+                    width: 50,
+                    height: 50,
+                    child: const LinearProgressIndicator()),
+                errorWidget: (context, url, error) => Image.network(
+                  "${MainUtils.urlHostAssetsImagen}/logos/logo_0.png",
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                ),
               ),
             ),
           ),
@@ -259,12 +306,14 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          widget.evento.evento![0].tipo!,
+                          widget.evento.evento!.length > 0
+                              ? widget.evento.evento![0].tipo!
+                              : "",
                           style: TextStyle(color: ColorsUtils.blancoColor),
                         ),
                         SizedBox(width: 8),
                         Text(
-                          "${widget.evento.evento![0].etiqueta!} | ${widget.evento.evento![0].fecha!} - ${widget.evento.evento![0].hora!}",
+                          "${widget.evento.evento!.length > 0 ? widget.evento.evento![0].etiqueta : ""} | ${widget.evento.evento!.length > 0 ? widget.evento.evento![0].fecha! : ""} - ${widget.evento.evento!.length > 0 ? widget.evento.evento![0].hora! : ""}",
                           style: TextStyle(
                             color: ColorsUtils.blancoColor,
                             fontFamily: 'Roboto',
@@ -273,12 +322,22 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
                         ),
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: etiquetasWidgets,
+                    ),
+                    const SizedBox(height: 16),
+                    InfoButtons(
+                        jsonString: widget.evento.evento![0].infoExtra ?? "{}"),
                     const SizedBox(height: 16),
                     // Description
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        widget.evento.evento![0].descripcion!,
+                        widget.evento.evento!.length > 0
+                            ? widget.evento.evento![0].descripcion!
+                            : "",
                         style: TextStyle(color: ColorsUtils.blancoColor),
                         textAlign: TextAlign.left,
                       ),
@@ -326,28 +385,72 @@ class _DetalleEventoState extends State<DetalleEventoPush> {
                       height: 10.0,
                     ),
                     if ((widget.evento.items!.isNotEmpty) && (!is_Reservado))
-                      GestureDetector(
-                        child: Container(
-                          width: 200,
-                          decoration: BoxDecoration(
-                            color: ColorsUtils.principalColor,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Comprar V1",
-                              style: TextStyle(
-                                color: ColorsUtils.blancoColor,
-                                fontSize: 22,
+                      if (widget.evento.evento!.first.esGratis == "0") ...[
+                        GestureDetector(
+                          onTap: () {
+                            is_Login
+                                ? iniciarPago()
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginScreen(
+                                            controller: widget.controller)),
+                                  );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: ColorsUtils.principalColor,
+                              borderRadius: BorderRadius.circular(40),
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Center(
+                                child: Text(
+                                  "(${totalPagar.toString()}€) COMPRAR",
+                                  style: TextStyle(
+                                      color: ColorsUtils.blancoColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Roboto'),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                        onTap: () {
-                          // Acción al tocar el separador
-                          _crearReservas();
-                        },
-                      ),
+                      ] else ...[
+                        GestureDetector(
+                          child: Container(
+                            width: 200,
+                            decoration: BoxDecoration(
+                              color: ColorsUtils.principalColor,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: Text(
+                                  "Apuntarme",
+                                  style: TextStyle(
+                                    color: ColorsUtils.blancoColor,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          onTap: () {
+                            is_Login
+                                ? _crearReservas()
+                                : Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => LoginScreen(
+                                            controller: widget.controller)),
+                                  );
+                          },
+                        ),
+                      ],
+
                     SizedBox(
                       height: 90.0,
                     ),

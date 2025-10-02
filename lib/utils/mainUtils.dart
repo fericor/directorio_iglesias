@@ -8,6 +8,10 @@ class MainUtils {
   static final urlHostAssets = "https://api.conexion-mas.com/assets_app";
   static final urlHostAssetsImagen = "https://api.conexion-mas.com/imagen";
 
+  // static final urlHostApi = "http://conexion_mas.local";
+  // static final urlHostAssets = "http://conexion_mas.local/assets_app";
+  // static final urlHostAssetsImagen = "http://conexion_mas.local/imagen";
+
   Future<void> openMap(lat, long) async {
     try {
       await launchUrlString(

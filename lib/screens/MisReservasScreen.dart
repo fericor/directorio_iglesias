@@ -1,14 +1,13 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conexion_mas/controllers/ProfileServide.dart';
 import 'package:conexion_mas/controllers/eventosApiClient.dart';
-import 'package:conexion_mas/controllers/notificacionesApiClient.dart';
 import 'package:conexion_mas/controllers/reservasApiClient.dart';
 import 'package:conexion_mas/models/reservas.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/utils/widgets.dart';
 import 'package:conexion_mas/widgets/detalleEvento.dart';
+import 'package:conexion_mas/widgets/horizontal_user_list.dart';
 import 'package:flutter/material.dart';
 import 'package:localstorage/localstorage.dart';
 
@@ -21,7 +20,9 @@ class MisreservasScreen extends StatefulWidget {
 
 class _MisreservasScreenState extends State<MisreservasScreen> {
   late List<Reserva> items = [];
+  List<dynamic> _suggestedUsers = [];
   bool loading = true;
+  bool _loading = true;
   String idUser = localStorage.getItem('miIdUser').toString() ?? '0';
 
   @override
@@ -29,6 +30,7 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
     super.initState();
 
     obtenerReservasUsuario();
+    _loadSuggestedUsers();
   }
 
   // Cancelar reserva
@@ -56,11 +58,42 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
     }
   }
 
+  Future<void> _loadSuggestedUsers() async {
+    try {
+      final result = await ProfileService.getSuggestedUsers();
+      setState(() {
+        _suggestedUsers = result['users'] ?? [];
+        _loading = false;
+      });
+    } catch (error) {
+      setState(() => _loading = false);
+      print('Error: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorsUtils.fondoColor,
-      body: Stack(
+        backgroundColor: ColorsUtils.fondoColor,
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              frcaWidget.frca_texto_header("Amigos", popupMenuIglesias()),
+              HorizontalUserList(
+                users: _suggestedUsers,
+                title: 'Usuarios Sugeridos',
+                onSeeAll: () {
+                  /*Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UserSearchScreen(),
+                      ));*/
+                },
+              )
+            ],
+          ),
+        ) /*Stack(
         children: [
           Positioned(
             top: 70,
@@ -138,6 +171,7 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => DetalleEvento(
+                                        index: 0,
                                         evento: eventoItem,
                                         controller: PageController())),
                               );
@@ -149,8 +183,8 @@ class _MisreservasScreenState extends State<MisreservasScreen> {
                   ),
           ),
         ],
-      ),
-    );
+      ),*/
+        );
   }
 
   ////////////////////////////////////

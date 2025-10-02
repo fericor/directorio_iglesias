@@ -56,7 +56,11 @@ class _LoginScreenState extends State<LoginScreen> {
         localStorage.setItem('miIdUser', myMap['idUser'].toString());
         localStorage.setItem('miEmail', myMap['email'].toString());
         localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
-        localStorage.setItem('miOranizacion', myMap['idOrganizacion'].toString());
+        localStorage.setItem(
+            'miOrganizacion', myMap['idOrganizacion'].toString());
+        localStorage.setItem('miDistrito', myMap['distrito'].toString());
+        localStorage.setItem('miRegion', myMap['region'].toString());
+        localStorage.setItem('miRole', myMap['role'].toString());
 
         localStorage.setItem('isLogin', 'true');
         localStorage.setItem('miUser', email);

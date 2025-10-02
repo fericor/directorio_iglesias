@@ -5,7 +5,7 @@ class Notificaciones {
   String? detalles;
   String? tipo;
   String? fecha;
-  int? estado;
+  String? estado;
   String? createdAt;
   String? updatedAt;
 
@@ -27,7 +27,7 @@ class Notificaciones {
     detalles = json['detalles'];
     tipo = json['tipo'];
     fecha = json['fecha'];
-    estado = json['estado'];
+    estado = json['estado'].toString();
     createdAt = json['created_at'];
     updatedAt = json['updated_at'];
   }

@@ -40,8 +40,8 @@ class CardSimpleEvento extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>
-                    DetalleEvento(evento: eventoItem, controller: controller)),
+                builder: (context) => DetalleEvento(
+                    index: 0, evento: eventoItem, controller: controller)),
           );
         });
       },

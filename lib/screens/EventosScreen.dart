@@ -178,7 +178,15 @@ class _EventosScreenState extends State<EventosScreen> {
         hayEventos = iglesias.first.eventosIglesia!.length > 0 ? true : false;
         _loadingIglesias = false;
       });
+    }).catchError((error) {
+      print('Error al cargar iglesias: $error');
+    }).whenComplete(() {
+      // Se ejecuta siempre, tanto en éxito como en error
+      setState(() {
+        _loadingIglesias = false;
+      });
     });
+    ;
   }
 
   void cambioDistancia(double distance) {

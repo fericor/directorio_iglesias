@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:conexion_mas/models/categorias.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
@@ -293,7 +295,7 @@ class frcaWidget {
             borderRadius: BorderRadius.circular(10.0),
             image: DecorationImage(
               image: NetworkImage(
-                  'https://vallmarketing.es/app_assets/images/users/user_1.png'),
+                  'https://vallmarketing.es/app_assets/images/usuarios/user_0.png'),
               fit: BoxFit.contain,
             ),
             border: Border.all(
@@ -461,7 +463,7 @@ class frcaWidget {
                       placeholder: (context, url) =>
                           Center(child: CircularProgressIndicator()),
                       errorWidget: (context, url, error) => Image.network(
-                        "${MainUtils.urlHostAssets}/images/users/user_0.png",
+                        "${MainUtils.urlHostAssets}/images/usuarios/user_0.png",
                         fit: BoxFit.cover,
                         width: 40,
                         height: 40,
@@ -1084,5 +1086,48 @@ class frcaWidget {
             strokeWidth: 3,
           )),
     );
+  }
+
+  // Función para convertir string JSON a Map
+  Map<String, String> convertirJsonAMap(String jsonString) {
+    try {
+      final Map<String, dynamic> parsed = jsonDecode(jsonString);
+      final Map<String, String> result = {};
+      parsed.forEach((key, value) {
+        result[key] = value.toString();
+      });
+      return result;
+    } catch (e) {
+      return {};
+    }
+  }
+
+// Función para convertir Map a string JSON
+  String convertirMapAJson(Map<String, String> map) {
+    return jsonEncode(map);
+  }
+
+// Ejemplo de uso en cualquier widget
+  Widget _buildInfoExtraWidget(String infoExtraJson) {
+    final infoExtra = convertirJsonAMap(infoExtraJson);
+
+    if (infoExtra.isEmpty) return const SizedBox.shrink();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Información adicional:',
+            style: TextStyle(fontWeight: FontWeight.bold)),
+        ...infoExtra.entries
+            .map((entry) => Text('${entry.key}: ${entry.value}'))
+            .toList(),
+      ],
+    );
+  }
+
+  // Ejemplo para obtener un valor específico
+  String? obtenerValorEspecifico(String infoExtraJson, String clave) {
+    final map = convertirJsonAMap(infoExtraJson);
+    return map[clave];
   }
 }

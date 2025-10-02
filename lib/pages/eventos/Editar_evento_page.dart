@@ -1,10 +1,15 @@
 import 'package:conexion_mas/controllers/EventoService.dart';
+import 'package:conexion_mas/helper/snackbar.dart';
 import 'package:conexion_mas/models/MisEventos.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
+import 'package:conexion_mas/widgets/EtiquetasInputField.dart';
+import 'package:conexion_mas/widgets/KeyValueInputField.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+
+import 'package:localstorage/localstorage.dart';
 
 class EditarEventoPage extends StatefulWidget {
   final MisEventos evento;
@@ -47,6 +52,12 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
   bool _portada = false;
   bool _loading = false;
 
+  // Para las etiquetas (si las usas)
+  String _etiquetasJson = '[]';
+
+  // Para la información adicional (clave-valor)
+  String _infoExtraJson = '{}';
+
   @override
   void initState() {
     super.initState();
@@ -72,11 +83,38 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
     _horaFinController =
         TextEditingController(text: widget.evento.horaFin ?? '');
 
+    // Inicializar información adicional
+    _infoExtraJson = widget.evento.infoExtra ?? '{}';
+
+    // Inicializar etiquetas (si las usas)
+    _etiquetasJson = widget.evento.etiqueta ?? '[]';
+
     _fecha = DateTime.parse(widget.evento.fecha!);
     _fechaFin = widget.evento.fechaFin != null
         ? DateTime.parse(widget.evento.fechaFin!)
         : DateTime.now();
     _portada = widget.evento.portada! == 1;
+  }
+
+  Widget _buildInfoExtraField() {
+    return KeyValueInputField(
+      jsonData: _infoExtraJson,
+      onJsonChanged: (nuevoJson) {
+        setState(() => _infoExtraJson = nuevoJson);
+      },
+      labelText: 'Información adicional (Teléfono, Web, etc.)',
+    );
+  }
+
+  // Si también usas etiquetas
+  Widget _buildEtiquetasField() {
+    return EtiquetasInputField(
+      etiquetaJson: _etiquetasJson,
+      onEtiquetasChanged: (nuevoJson) {
+        setState(() => _etiquetasJson = nuevoJson);
+      },
+      labelText: 'Etiquetas del evento',
+    );
   }
 
   @override
@@ -110,7 +148,10 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
                     const SizedBox(height: 20),
                     _buildDateFields(),
                     const SizedBox(height: 20),
-                    _buildAdditionalFields(),
+                    _buildInfoExtraField(),
+                    const SizedBox(height: 20),
+                    // Si usas etiquetas también
+                    _buildEtiquetasField(),
                     const SizedBox(height: 20),
                     _buildPortadaSwitch(),
                     const SizedBox(height: 30),
@@ -212,123 +253,70 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
   }
 
   Widget _buildBasicFields() {
-    return Column(
-      children: [
-        TextFormField(
-          controller: _tituloController,
-          decoration: const InputDecoration(
-            labelText: 'Título*',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _lugarController,
-          decoration: const InputDecoration(
-            labelText: 'Lugar*',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _direccionController,
-          decoration: const InputDecoration(
-            labelText: 'Dirección*',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _descCortaController,
-          decoration: const InputDecoration(
-            labelText: 'Descripción Corta*',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 2,
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-        const SizedBox(height: 12),
-        TextFormField(
-          controller: _descripcionController,
-          decoration: const InputDecoration(
-            labelText: 'Descripción Completa*',
-            border: OutlineInputBorder(),
-          ),
-          maxLines: 4,
-          validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDateFields() {
-    return Card(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: ColorsUtils.terceroColor,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: ColorsUtils.principalColor),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Fechas y Horas',
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Fecha Inicio*'),
-                      TextButton(
-                        onPressed: () => _seleccionarFecha(inicio: true),
-                        child: Text(
-                            '${_fecha.day}/${_fecha.month}/${_fecha.year}'),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    controller: _horaController,
-                    decoration: const InputDecoration(
-                      labelText: 'Hora Inicio*',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) =>
-                        value?.isEmpty ?? true ? 'Requerido' : null,
-                  ),
-                ),
-              ],
+            TextFormField(
+              controller: _tituloController,
+              decoration: const InputDecoration(
+                labelText: 'Título*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
             ),
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Fecha Fin (opcional)'),
-                      TextButton(
-                        onPressed: () => _seleccionarFecha(inicio: false),
-                        child: Text(_fechaFin != null
-                            ? '${_fechaFin!.day}/${_fechaFin!.month}/${_fechaFin!.year}'
-                            : 'Seleccionar'),
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    controller: _horaFinController,
-                    decoration: const InputDecoration(
-                      labelText: 'Hora Fin',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ),
-              ],
+            TextFormField(
+              controller: _lugarController,
+              decoration: const InputDecoration(
+                labelText: 'Lugar*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _direccionController,
+              decoration: const InputDecoration(
+                labelText: 'Dirección*',
+                border: OutlineInputBorder(),
+              ),
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _descCortaController,
+              decoration: const InputDecoration(
+                labelText: 'Descripción Corta*',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 2,
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _descripcionController,
+              decoration: const InputDecoration(
+                labelText: 'Descripción Completa*',
+                border: OutlineInputBorder(),
+              ),
+              maxLines: 4,
+              validator: (value) => value?.isEmpty ?? true ? 'Requerido' : null,
+            ),
+            const SizedBox(height: 12),
+            TextFormField(
+              controller: _tipoController,
+              decoration: const InputDecoration(
+                labelText: 'Tipo',
+                border: OutlineInputBorder(),
+              ),
             ),
           ],
         ),
@@ -336,63 +324,80 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
     );
   }
 
-  Widget _buildAdditionalFields() {
-    return Wrap(
-      spacing: 10,
-      runSpacing: 10,
-      children: [
-        SizedBox(
-          width: 10,
-          child: TextFormField(
-            controller: _seatsController,
-            decoration: const InputDecoration(
-              labelText: 'Capacidad',
-              border: OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.number,
+  Widget _buildDateFields() {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: ColorsUtils.principalColor),
+      ),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Fechas y Horas',
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Fecha Inicio*'),
+                        TextButton(
+                          onPressed: () => _seleccionarFecha(inicio: true),
+                          child: Text(
+                              '${_fecha.day}/${_fecha.month}/${_fecha.year}'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _horaController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hora Inicio*',
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) =>
+                          value?.isEmpty ?? true ? 'Requerido' : null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Fecha Fin (opcional)'),
+                        TextButton(
+                          onPressed: () => _seleccionarFecha(inicio: false),
+                          child: Text(_fechaFin != null
+                              ? '${_fechaFin!.day}/${_fechaFin!.month}/${_fechaFin!.year}'
+                              : 'Seleccionar'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _horaFinController,
+                      decoration: const InputDecoration(
+                        labelText: 'Hora Fin',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _tipoController,
-            decoration: const InputDecoration(
-              labelText: 'Tipo',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _etiquetaController,
-            decoration: const InputDecoration(
-              labelText: 'Etiqueta',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _distritoController,
-            decoration: const InputDecoration(
-              labelText: 'Distrito',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-        SizedBox(
-          width: 120,
-          child: TextFormField(
-            controller: _regionController,
-            decoration: const InputDecoration(
-              labelText: 'Región',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ),
-      ],
+      ),
     );
   }
 
@@ -492,18 +497,14 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
         direccion: _direccionController.text,
         descripcionCorta: _descCortaController.text,
         descripcion: _descripcionController.text,
-        infoExtra: widget.evento.infoExtra, // Mantener valor original
+        infoExtra: _infoExtraJson, // Mantener valor original
         seats: _seatsController.text,
         tipo: _tipoController.text,
-        etiqueta: _etiquetaController.text,
+        etiqueta: _etiquetasJson,
         imagen: widget.evento.imagen, // Mantener imagen original
         portada: _portada ? 1 : 0,
-        distrito: _distritoController.text.isEmpty
-            ? widget.evento.distrito
-            : _distritoController.text,
-        region: _regionController.text.isEmpty
-            ? widget.evento.region
-            : _regionController.text,
+        distrito: localStorage.getItem('miDistrito'),
+        region: localStorage.getItem('miRegion'),
         esGratis: widget.evento.esGratis, // Mantener valor original
         activo: widget.evento.activo, // Mantener estado activo original
         createdAt: widget.evento.createdAt, // Mantener fecha creación original
@@ -523,8 +524,10 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
         );
       }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Evento actualizado correctamente')),
+      AppSnackbar.show(
+        context,
+        message: 'Evento actualizado correctamente',
+        type: SnackbarType.success,
       );
 
       widget.onEventoActualizado();
@@ -541,26 +544,6 @@ class _EditarEventoPageState extends State<EditarEventoPage> {
   // Para formatear DateTime a string (YYYY-MM-DD)
   String _formatDate(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
-
-  // Para parsear fechas desde string a DateTime
-  DateTime? _parseDate(String? dateString) {
-    if (dateString == null || dateString.isEmpty) return null;
-    try {
-      // Manejar diferentes formatos de fecha
-      if (dateString.contains('-')) {
-        return DateTime.parse(dateString);
-      } else if (dateString.contains('/')) {
-        final parts = dateString.split('/');
-        if (parts.length == 3) {
-          return DateTime(
-              int.parse(parts[2]), int.parse(parts[1]), int.parse(parts[0]));
-        }
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
   }
 
   @override

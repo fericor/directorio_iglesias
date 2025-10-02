@@ -220,7 +220,11 @@ class NotificationService {
         .then((eventoItem) {
       Navigator.of(_context!).push(
         MaterialPageRoute(
-            builder: (context) => DetalleEventoPush(evento: eventoItem)),
+          builder: (context) => DetalleEventoPush(
+            evento: eventoItem,
+            controller: PageController(),
+          ),
+        ),
       );
     });
 

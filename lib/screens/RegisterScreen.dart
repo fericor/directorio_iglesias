@@ -51,7 +51,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
       localStorage.setItem('miIdUser', myMap['idUser'].toString());
       localStorage.setItem('miEmail', myMap['email'].toString());
       localStorage.setItem('miIglesia', myMap['idIglesia'].toString());
-      localStorage.setItem('miOranizacion', myMap['idOrganizacion'].toString());
+      localStorage.setItem(
+          'miOrganizacion', myMap['idOrganizacion'].toString());
+
+      localStorage.setItem('miDistrito', myMap['distrito'].toString());
+      localStorage.setItem('miRegion', myMap['region'].toString());
+      localStorage.setItem('miRole', myMap['role'].toString());
 
       localStorage.setItem('isLogin', 'true');
       localStorage.setItem('miUser', email);
@@ -69,6 +74,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<void> _handleRegister() async {
+    setState(() => _isLoading = false);
+
     if (Validator.validateName(_nombreController.text) != null) {
       AppSnackbar.show(
         context,
@@ -122,15 +129,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
         } else {
           var iTems = await AuthService()
               .register(nombre, telefono, email, password, iglesiaId);
-          Map myMap = jsonDecode(iTems!);
+          Map<String, dynamic> myMap = jsonDecode(iTems!);
 
-          AppSnackbar.show(
-            context,
-            message: "Tu cuenta ha sido creada con exito.",
-            type: SnackbarType.success,
-          );
+          if (myMap["res"] != "false") {
+            AppSnackbar.show(
+              context,
+              message: "Tu cuenta ha sido creada con exito.",
+              type: SnackbarType.success,
+            );
 
-          Navigator.pop(context);
+            Navigator.pop(context);
+          } else {
+            AppSnackbar.show(
+              context,
+              message: myMap["message"],
+              type: SnackbarType.error,
+            );
+          }
         }
       } catch (e) {
         setState(() {

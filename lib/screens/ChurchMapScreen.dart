@@ -198,8 +198,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                             ));
                       },
                       child: Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
@@ -219,7 +219,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                               Text(
                                 'Iglesia',
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: ColorsUtils.blancoColor),
                               ),
@@ -255,8 +255,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                         }
                       },
                       child: Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
@@ -276,7 +276,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                               Text(
                                 'Pastor',
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: ColorsUtils.blancoColor),
                               ),
@@ -295,8 +295,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                         MainUtils().calTel(church.telefono!);
                       },
                       child: Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
@@ -316,7 +316,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                               Text(
                                 'Llamar',
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: ColorsUtils.blancoColor),
                               ),
@@ -335,8 +335,8 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                         MainUtils().openMap(church.latitud, church.longitud);
                       },
                       child: Container(
-                        width: 80,
-                        height: 80,
+                        width: 70,
+                        height: 70,
                         decoration: BoxDecoration(
                           color: ColorsUtils.principalColor,
                           borderRadius: BorderRadius.circular(8),
@@ -360,7 +360,7 @@ class _ChurchMapScreenState extends State<ChurchMapScreen> {
                               Text(
                                 'Llegar',
                                 style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: ColorsUtils.blancoColor),
                               ),

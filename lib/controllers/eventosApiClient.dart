@@ -106,8 +106,6 @@ class EventosApiClient {
     }
   }
 
-  
-
   Future<List<MisReservas>> getEventoByUser(
       String idUser, String apiToken) async {
     final response = await _httpClient.get(Uri.parse(
@@ -136,6 +134,8 @@ class EventosApiClient {
   Future<EventosItems> getEventoPortada() async {
     final response =
         await _httpClient.get(Uri.parse('$_baseUrl/frcaListarEventoPortada'));
+
+    print('$_baseUrl/frcaListarEventoPortada');
     if (response.statusCode == 200) {
       return EventosItems.fromJson(jsonDecode(response.body));
     } else {

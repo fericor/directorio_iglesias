@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:conexion_mas/controllers/CalendarService.dart';
 import 'package:conexion_mas/controllers/reservasApiClient.dart';
 import 'package:conexion_mas/controllers/stripeApiClient.dart';
 import 'package:conexion_mas/helper/snackbar.dart';
@@ -12,6 +13,8 @@ import 'package:conexion_mas/screens/qrEventoDetalleScreen.dart';
 import 'package:conexion_mas/utils/colorsUtils.dart';
 import 'package:conexion_mas/utils/mainUtils.dart';
 import 'package:conexion_mas/utils/widgets.dart';
+import 'package:conexion_mas/widgets/comment_section.dart';
+import 'package:conexion_mas/widgets/follow_button.dart';
 import 'package:conexion_mas/widgets/infoEventos.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,7 +23,12 @@ import 'package:localstorage/localstorage.dart';
 class DetalleEvento extends StatefulWidget {
   PageController controller;
   EventosItems evento;
-  DetalleEvento({super.key, required this.controller, required this.evento});
+  int index;
+  DetalleEvento(
+      {super.key,
+      required this.controller,
+      required this.evento,
+      required this.index});
 
   @override
   State<DetalleEvento> createState() => _DetalleEventoState();
@@ -54,7 +62,7 @@ class _DetalleEventoState extends State<DetalleEvento> {
 
     try {
       final result = await ReservasApiClient.crearReserva(
-        idEvento: int.parse(widget.evento.evento![0].idEvento!),
+        idEvento: int.parse(widget.evento.evento![widget.index].idEvento!),
         idUsuario: int.parse(idUser),
         items: _selectedItems,
       );
@@ -194,24 +202,23 @@ class _DetalleEventoState extends State<DetalleEvento> {
     });
   }
 
-  late List<Widget> etiquetasWidgets =
-      (jsonDecode(widget.evento.evento![0].etiqueta!) as List<dynamic>)
-          .map<String>(
-              (e) => e.toString()) // Convertimos cada elemento a String
-          .map<Widget>((txt) => Row(
-                children: [
-                  Text(
-                    txt,
-                    style: TextStyle(
-                      color: ColorsUtils.principalColor,
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 5),
-                ],
-              ))
-          .toList();
+  late List<Widget> etiquetasWidgets = (jsonDecode(
+          widget.evento.evento![widget.index].etiqueta!) as List<dynamic>)
+      .map<String>((e) => e.toString()) // Convertimos cada elemento a String
+      .map<Widget>((txt) => Row(
+            children: [
+              Text(
+                txt,
+                style: TextStyle(
+                  color: ColorsUtils.principalColor,
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(width: 5),
+            ],
+          ))
+      .toList();
 
   @override
   Widget build(BuildContext context) {
@@ -239,8 +246,8 @@ class _DetalleEventoState extends State<DetalleEvento> {
             actions: [
               is_Reservado
                   ? Container(
-                      width: 45,
-                      height: 45,
+                      width: 35,
+                      height: 35,
                       decoration: BoxDecoration(
                         color: ColorsUtils.principalColor,
                         borderRadius: BorderRadius.circular(10),
@@ -256,10 +263,42 @@ class _DetalleEventoState extends State<DetalleEvento> {
                         },
                         icon: Icon(Icons.qr_code),
                         color: ColorsUtils.blancoColor,
-                        iconSize: 30.0,
+                        iconSize: 20.0,
                       ),
                     )
                   : SizedBox.shrink(),
+              SizedBox(width: 3),
+              Container(
+                width: 35,
+                height: 35,
+                decoration: BoxDecoration(
+                  color: ColorsUtils.principalColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.calendar_today),
+                  iconSize: 20.0,
+                  onPressed: () => CalendarService.addToCalendar(
+                      widget.evento.evento![widget.index]),
+                  tooltip: 'Agregar al calendario',
+                ),
+              ),
+              SizedBox(width: 3),
+              Container(
+                width: 35,
+                height: 35,
+                decoration: BoxDecoration(
+                  color: ColorsUtils.principalColor,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: FollowButton(
+                  idEvento:
+                      int.parse(widget.evento.evento![widget.index].idEvento!),
+                  idIglesia:
+                      int.parse(widget.evento.evento![widget.index].idIglesia!),
+                  tipo: 'evento',
+                ),
+              ),
             ],
             expandedHeight: 300.0, // Altura inicial de la imagen
             floating: false,
@@ -272,7 +311,7 @@ class _DetalleEventoState extends State<DetalleEvento> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    widget.evento.evento![0].titulo!,
+                    widget.evento.evento![widget.index].titulo!,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -285,7 +324,7 @@ class _DetalleEventoState extends State<DetalleEvento> {
               background: CachedNetworkImage(
                 fit: BoxFit.cover,
                 imageUrl:
-                    "${MainUtils.urlHostAssetsImagen}/${widget.evento.evento![0].imagen!}",
+                    "${MainUtils.urlHostAssetsImagen}/${widget.evento.evento![widget.index].imagen!}",
                 imageBuilder: (context, imageProvider) => Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
@@ -319,7 +358,7 @@ class _DetalleEventoState extends State<DetalleEvento> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          widget.evento.evento![0].tipo!,
+                          widget.evento.evento![widget.index].tipo!,
                           style: TextStyle(
                             color: ColorsUtils.blancoColor,
                             fontSize: 16,
@@ -327,7 +366,7 @@ class _DetalleEventoState extends State<DetalleEvento> {
                         ),
                         SizedBox(width: 8),
                         Text(
-                          "${widget.evento.evento![0].fecha!} - ${widget.evento.evento![0].hora!}",
+                          "${widget.evento.evento![widget.index].fecha!} - ${widget.evento.evento![widget.index].hora!}",
                           style: TextStyle(
                             color: ColorsUtils.blancoColor,
                             fontFamily: 'Roboto',
@@ -344,13 +383,15 @@ class _DetalleEventoState extends State<DetalleEvento> {
                     ),
                     const SizedBox(height: 16),
                     InfoButtons(
-                        jsonString: widget.evento.evento![0].infoExtra ?? "{}"),
+                        jsonString:
+                            widget.evento.evento![widget.index].infoExtra ??
+                                "{}"),
                     const SizedBox(height: 16),
                     // Description
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 16.0),
                       child: Text(
-                        widget.evento.evento![0].descripcion!,
+                        widget.evento.evento![widget.index].descripcion!,
                         style: TextStyle(color: ColorsUtils.blancoColor),
                         textAlign: TextAlign.left,
                       ),
@@ -437,6 +478,19 @@ class _DetalleEventoState extends State<DetalleEvento> {
                           },
                         ),
                       ],
+
+                    // Nueva sección de comentarios
+                    SizedBox(height: 44),
+                    Padding(
+                      padding: const EdgeInsets.all(0),
+                      child: CommentSection(
+                        idEvento: int.parse(
+                            widget.evento.evento![widget.index].idEvento!),
+                        idIglesia: int.parse(
+                            widget.evento.evento![widget.index].idIglesia!),
+                        tipo: 'evento',
+                      ),
+                    ),
 
                     SizedBox(
                       height: 90.0,

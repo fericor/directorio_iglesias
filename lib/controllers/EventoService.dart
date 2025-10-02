@@ -7,6 +7,18 @@ class EventoService {
   final String _baseUrl = MainUtils.urlHostApi;
   final http.Client _httpClient = http.Client();
 
+  Future<List<MisEventos>> getEventosTodos(String token) async {
+    final response = await _httpClient
+        .get(Uri.parse('$_baseUrl/eventosTodos?api_token=$token'));
+    if (response.statusCode == 200) {
+      return (jsonDecode(response.body) as List)
+          .map((jsonEventos) => MisEventos.fromJson(jsonEventos))
+          .toList();
+    } else {
+      throw Exception('Error al obtener la tarea con ID');
+    }
+  }
+
   Future<List<MisEventos>> getEventoByIglesia(
       String idIglesia, String token) async {
     final response = await _httpClient
